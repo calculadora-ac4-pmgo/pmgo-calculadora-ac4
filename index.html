@@ -5,26 +5,360 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculadora AC4 - 19º CRPM</title>
   <style>
-    :root{--verde:#006b3f;--verde2:#013f2a;--dourado:#d6b25e;--bg:#edf2f5;--card:#fff;--muted:#667085;--line:#d9e2ec;--danger:#b42318}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#edf2f5,#f8fafc);font-family:Segoe UI,Arial,sans-serif;color:#102a43}.page{max-width:1120px;margin:0 auto;padding:24px}.hero{background:linear-gradient(135deg,var(--verde2),var(--verde));border-radius:24px;color:#fff;padding:24px;box-shadow:0 16px 40px rgba(0,0,0,.18);display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:center}.brasao-img{width:110px;max-height:130px;object-fit:contain}.brasao-fallback{width:110px;height:110px;border-radius:24px;background:linear-gradient(135deg,#fff7db,var(--dourado));color:#073b2a;display:grid;place-items:center;text-align:center;font-weight:900;box-shadow:0 8px 18px rgba(0,0,0,.25)}.hero h1{margin:0;font-size:30px}.hero p{margin:8px 0 0;color:#eef7f0}.badge{display:inline-block;background:rgba(214,178,94,.18);border:1px solid rgba(214,178,94,.7);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700;margin-bottom:8px}.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin-top:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 10px 28px rgba(16,42,67,.08)}h2{font-size:18px;margin:0 0 14px;color:#0b2f22}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}label{display:block;font-size:13px;font-weight:700;margin:10px 0 5px;color:#243b53}input{width:100%;border:1.5px solid #c9d6e2;border-radius:12px;padding:11px 12px;font-size:15px;background:#fbfdff}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button{border:0;border-radius:13px;padding:12px 16px;font-size:15px;font-weight:800;cursor:pointer}.primary{background:var(--verde);color:#fff}.secondary{background:#e9f1f7;color:#0b3954}.gold{background:var(--dourado);color:#1f2933}.danger{background:#fee4e2;color:var(--danger)}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{background:#f4f8fb;border:1px solid #d8e3ec;border-radius:16px;padding:14px}.metric span{display:block;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase}.metric strong{display:block;font-size:24px;margin-top:4px;color:#0b2f22}.table-wrap{overflow:auto;margin-top:14px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px;border-bottom:1px solid #e5edf4;text-align:left;vertical-align:top}th{font-size:12px;text-transform:uppercase;color:#52616f;background:#f8fafc}.notice{font-size:13px;color:#52616f;background:#fff8e1;border-left:5px solid var(--dourado);border-radius:12px;padding:12px;margin-top:12px}.empty{color:#667085;text-align:center;padding:18px}.imported{border:1px dashed #9fb3c8;border-radius:14px;padding:12px;background:#fbfdff;margin-top:10px}.footer{font-size:12px;text-align:center;color:#667085;margin:20px 0}.print-only{display:none}.tiny{font-size:12px;color:#667085}.err{color:var(--danger);font-weight:700;margin-top:8px}@media(max-width:880px){.grid{grid-template-columns:1fr}.hero{grid-template-columns:82px 1fr}.brasao-img,.brasao-fallback{width:78px;height:78px}.hero h1{font-size:23px}.row,.row3,.summary{grid-template-columns:1fr}.page{padding:12px}}@media print{body{background:#fff}.page{max-width:none;padding:0}.hero,.card{box-shadow:none;border-color:#bbb}.no-print,.actions,.imported{display:none!important}.print-only{display:block}.grid{display:block}.card{margin-top:12px}.hero{color:#111;background:#fff;border:1px solid #bbb}.hero p,.badge{color:#111}.summary{grid-template-columns:repeat(3,1fr)}}
+    :root {
+      --verde: #007a3d;
+      --verde-escuro: #064b2f;
+      --azul: #1f5f85;
+      --dourado: #d6b25e;
+      --texto: #102a43;
+      --muted: #667085;
+      --borda: #d8e2ec;
+      --bg: #eef3f7;
+      --card: #ffffff;
+      --erro: #b42318;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: radial-gradient(circle at top, #ffffff 0, var(--bg) 54%, #e4ebf1 100%);
+      color: var(--texto);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: 0 20px 45px rgba(16, 42, 67, 0.16);
+      padding: 26px;
+      border: 1px solid rgba(216, 226, 236, 0.9);
+    }
+
+    .topo {
+      text-align: center;
+      border-bottom: 1px solid var(--borda);
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+    }
+
+    .brasao {
+      width: 86px;
+      height: 86px;
+      object-fit: contain;
+      margin: 0 auto 8px;
+      display: block;
+    }
+
+    .brasao-fallback {
+      width: 78px;
+      height: 78px;
+      border-radius: 18px;
+      margin: 0 auto 10px;
+      display: none;
+      place-items: center;
+      background: linear-gradient(135deg, #fff8df, var(--dourado));
+      color: var(--verde-escuro);
+      font-weight: 900;
+      font-size: 15px;
+      line-height: 1.05;
+      box-shadow: 0 8px 16px rgba(0,0,0,.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 25px;
+      color: #09233a;
+    }
+
+    .subtitulo {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .subtitulo strong { color: #c0392b; }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #243b53;
+    }
+
+    input {
+      width: 100%;
+      border: 2px solid var(--borda);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 16px;
+      background: #fbfdff;
+      transition: .2s;
+    }
+
+    input:focus {
+      border-color: var(--azul);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(31, 95, 133, .12);
+      background: #fff;
+    }
+
+    .linha-horas {
+      display: grid;
+      grid-template-columns: 1fr 70px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .linha-horas span {
+      font-weight: 700;
+      color: #243b53;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 15px;
+      padding: 15px 16px;
+      margin-top: 18px;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-calcular {
+      background: var(--azul);
+      color: #fff;
+    }
+
+    .btn-pdf {
+      background: var(--verde);
+      color: #fff;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .resultado {
+      display: none;
+      margin-top: 22px;
+      background: #eaf4fb;
+      border-left: 7px solid var(--azul);
+      border-radius: 17px;
+      padding: 18px 20px;
+    }
+
+    .resultado small {
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      font-weight: 800;
+      color: #2c3e50;
+      margin-bottom: 6px;
+    }
+
+    .valor {
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+      color: #0b2f4a;
+      margin-bottom: 12px;
+    }
+
+    .detalhe {
+      border-top: 1px solid #c9d8e5;
+      padding-top: 11px;
+      font-size: 14px;
+      color: #243b53;
+      line-height: 1.45;
+    }
+
+    .erro {
+      color: var(--erro);
+      font-weight: 700;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    details {
+      margin-top: 16px;
+      border-top: 1px solid var(--borda);
+      padding-top: 12px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .valores-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .valores-grid label { font-size: 12px; margin-top: 8px; }
+    .valores-grid input { font-size: 14px; padding: 10px; }
+
+    .aviso {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 480px) {
+      .app { padding: 21px 16px; }
+      h1 { font-size: 22px; }
+      .valor { font-size: 30px; }
+    }
+
+    @media print {
+      body { background: #fff; display: block; padding: 0; }
+      .app { box-shadow: none; max-width: none; border: 0; }
+      .btn-calcular, .btn-pdf, details, .erro { display: none !important; }
+      .resultado { display: block !important; border: 1px solid #999; border-left: 7px solid #333; }
+    }
   </style>
 </head>
 <body>
-  <main class="page" id="relatorio">
-    <section class="hero">
-      <div>
-        <img class="brasao-img" src="assets/brasao-19crpm.png" alt="Brasão do 19º CRPM" onerror="this.style.display='none';document.getElementById('brasaoFallback').style.display='grid'" />
-        <div id="brasaoFallback" class="brasao-fallback" style="display:none">19º<br>CRPM<br>PMGO</div>
+  <main class="app">
+    <header class="topo">
+      <img class="brasao" src="assets/brasao-19crpm.png" alt="Brasão do 19º CRPM" onerror="this.style.display='none';document.getElementById('fallback').style.display='grid'" />
+      <div id="fallback" class="brasao-fallback">19º<br>CRPM<br>PMGO</div>
+      <h1>⏱️ AC4</h1>
+      <div class="subtitulo">Serviço Extraordinário · <strong>PORTARIA SSP Nº 621/2026</strong></div>
+    </header>
+
+    <label for="inicio">📅 Data e hora de início do serviço</label>
+    <input type="datetime-local" id="inicio" />
+
+    <label for="horas">⏳ Quantidade de horas trabalhadas</label>
+    <div class="linha-horas">
+      <input type="number" id="horas" min="0.5" step="0.5" value="1" />
+      <span>horas</span>
+    </div>
+
+    <button class="btn-calcular" onclick="calcular()">🔢 Calcular valor</button>
+
+    <section class="resultado" id="resultado">
+      <small>Valor estimado a receber</small>
+      <div class="valor" id="valorFinal">R$ 0,00</div>
+      <div class="detalhe" id="detalhe"></div>
+    </section>
+
+    <button class="btn-pdf" id="btnPdf" onclick="window.print()">📄 Salvar em PDF</button>
+
+    <div id="erro" class="erro"></div>
+
+    <details>
+      <summary>Ajustar valores da tabela, se necessário</summary>
+      <div class="valores-grid">
+        <div><label>Azul diurno</label><input id="azulDia" type="number" value="30" step="0.01" /></div>
+        <div><label>Azul noturno</label><input id="azulNoite" type="number" value="33" step="0.01" /></div>
+        <div><label>Vermelha diurna</label><input id="vermelhaDia" type="number" value="40" step="0.01" /></div>
+        <div><label>Vermelha noturna</label><input id="vermelhaNoite" type="number" value="45" step="0.01" /></div>
       </div>
-      <div><span class="badge">MVP AC4 • 19º CRPM</span><h1>Calculadora de Escalas AC4</h1><p>Calcule horas, estime o valor a receber, importe eventos da Agenda Google e gere PDF para conferência.</p></div>
-    </section>
-    <section class="grid">
-      <div class="card no-print"><h2>1. Dados do policial</h2><div class="row"><div><label>Nome</label><input id="nome" placeholder="Ex.: CB Weliton" /></div><div><label>Posto/graduação</label><input id="graduacao" placeholder="Ex.: CB PM" /></div></div><div class="row"><div><label>Unidade</label><input id="unidade" placeholder="Ex.: 19º CRPM" /></div><div><label>Mês de referência</label><input id="mes" type="month" /></div></div><h2 style="margin-top:18px">2. Lançar escala manual</h2><label>Descrição da escala</label><input id="descricao" placeholder="Ex.: AC4 - reforço operacional" /><div class="row"><div><label>Início</label><input id="inicio" type="datetime-local" /></div><div><label>Término</label><input id="fim" type="datetime-local" /></div></div><div class="actions"><button class="primary" onclick="adicionarManual()">Adicionar escala</button><button class="secondary" onclick="preencherAgora()">Preencher agora</button><button class="danger" onclick="limparTudo()">Limpar</button></div><div id="erro" class="err"></div><div class="notice">Valores iniciais editáveis. Confira sempre a tabela oficial antes de usar profissionalmente.</div><h2 style="margin-top:18px">3. Tabela de valores</h2><div class="row3"><div><label>Azul diurno</label><input id="azulDia" type="number" value="30" step="0.01" /></div><div><label>Azul noturno</label><input id="azulNoite" type="number" value="33" step="0.01" /></div><div><label>Portaria/tabela</label><input id="portaria" value="Portaria SSP nº 621/2026" /></div></div><div class="row"><div><label>Vermelha diurna</label><input id="vermelhaDia" type="number" value="40" step="0.01" /></div><div><label>Vermelha noturna</label><input id="vermelhaNoite" type="number" value="45" step="0.01" /></div></div></div>
-      <div class="card no-print"><h2>4. Importar Agenda Google (.ics)</h2><p class="tiny">Exporte sua agenda no Google Agenda e importe o arquivo .ics. Nenhuma senha ou token é solicitado.</p><label>Arquivo .ics</label><input id="ics" type="file" accept=".ics,text/calendar" /><div class="row"><div><label>Data inicial</label><input id="filtroInicio" type="date" /></div><div><label>Data final</label><input id="filtroFim" type="date" /></div></div><label>Palavras-chave</label><input id="keywords" value="AC4, extra, escala, serviço extraordinário" /><div class="actions"><button class="secondary" onclick="importarICS()">Pré-visualizar agenda</button><button class="primary" onclick="confirmarImportacao()">Adicionar eventos</button></div><div id="preview" class="imported empty">Nenhum evento importado ainda.</div><h2 style="margin-top:18px">5. Gerar PDF</h2><p class="tiny">Clique em gerar PDF e escolha “Salvar como PDF” na janela de impressão.</p><div class="actions"><button class="gold" onclick="window.print()">Gerar PDF / imprimir</button></div></div>
-    </section>
-    <section class="card" style="margin-top:18px"><h2>Resumo do cálculo</h2><div class="summary"><div class="metric"><span>Total de horas</span><strong id="totalHoras">0h</strong></div><div class="metric"><span>Valor estimado</span><strong id="totalValor">R$ 0,00</strong></div><div class="metric"><span>Escalas lançadas</span><strong id="totalEscalas">0</strong></div></div><div class="table-wrap"><table><thead><tr><th>Data/horário</th><th>Descrição</th><th>Horas</th><th>Valor</th><th class="no-print">Ação</th></tr></thead><tbody id="tbody"><tr><td colspan="5" class="empty">Nenhuma escala lançada.</td></tr></tbody></table></div><div class="notice">Relatório de apoio. O pagamento final depende da escala validada, da tabela oficial vigente e da conferência administrativa.</div><div class="print-only tiny" id="rodapePrint"></div></section><div class="footer">19º CRPM/PMGO • Serviço Extraordinário AC4 • Base declarada: Portaria SSP nº 621/2026</div>
+    </details>
+
+    <div class="aviso">
+      Cálculo de apoio. O pagamento final depende da escala validada, da tabela oficial vigente e da conferência administrativa.
+    </div>
   </main>
-<script>
-const escalas=[];let eventosPreview=[];const $=id=>document.getElementById(id);const moeda=c=>(c/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});const fmt=d=>d.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});function cents(id){return Math.round((parseFloat($(id).value||'0'))*100)}function tipoValor(dt){const dia=dt.getDay(),min=dt.getHours()*60+dt.getMinutes(),noturno=min>=1320||min<=300,vermelha=[5,6,0].includes(dia);if(vermelha&&noturno)return{nome:'Vermelha noturna',c:cents('vermelhaNoite')};if(vermelha)return{nome:'Vermelha diurna',c:cents('vermelhaDia')};if(noturno)return{nome:'Azul noturna',c:cents('azulNoite')};return{nome:'Azul diurna',c:cents('azulDia')}}function calcular(inicio,fim){let mins=Math.max(0,Math.round((fim-inicio)/60000)),valor=0,partes={};for(let i=0;i<mins;i++){const r=tipoValor(new Date(inicio.getTime()+i*60000));valor+=r.c/60;partes[r.nome]=(partes[r.nome]||0)+1}return{mins,valor:Math.round(valor),partes}}function addEscala(desc,ini,fim){const calc=calcular(ini,fim);if(calc.mins<=0)throw new Error('O término deve ser maior que o início.');escalas.push({desc:desc||'Escala AC4',ini,fim,...calc});render()}function adicionarManual(){try{$('erro').textContent='';addEscala($('descricao').value,new Date($('inicio').value),new Date($('fim').value));}catch(e){$('erro').textContent=e.message||'Dados inválidos.'}}function render(){let totalMin=0,total=0;const tbody=$('tbody');tbody.innerHTML='';if(!escalas.length){tbody.innerHTML='<tr><td colspan="5" class="empty">Nenhuma escala lançada.</td></tr>'}escalas.forEach((e,i)=>{totalMin+=e.mins;total+=e.valor;const det=Object.entries(e.partes).map(([k,m])=>`${k}: ${(m/60).toFixed(2).replace('.',',')}h`).join('<br>');tbody.insertAdjacentHTML('beforeend',`<tr><td>${fmt(e.ini)}<br>até ${fmt(e.fim)}</td><td><strong>${e.desc}</strong><br><span class="tiny">${det}</span></td><td>${(e.mins/60).toFixed(2).replace('.',',')}h</td><td><strong>${moeda(e.valor)}</strong></td><td class="no-print"><button class="danger" onclick="remover(${i})">Excluir</button></td></tr>`)});$('totalHoras').textContent=(totalMin/60).toFixed(2).replace('.',',')+'h';$('totalValor').textContent=moeda(total);$('totalEscalas').textContent=escalas.length;$('rodapePrint').innerHTML=`Policial: ${$('nome').value||'-'} • Graduação: ${$('graduacao').value||'-'} • Unidade: ${$('unidade').value||'-'} • Mês: ${$('mes').value||'-'} • Tabela: ${$('portaria').value||'-'} • Gerado em ${new Date().toLocaleString('pt-BR')}`}function remover(i){escalas.splice(i,1);render()}function limparTudo(){if(confirm('Limpar todas as escalas?')){escalas.length=0;render()}}function preencherAgora(){const n=new Date(),f=new Date(n.getTime()+6*3600000),loc=x=>new Date(x.getTime()-x.getTimezoneOffset()*60000).toISOString().slice(0,16);$('inicio').value=loc(n);$('fim').value=loc(f)}function unfoldICS(t){return t.replace(/\r?\n[ \t]/g,'')}function parseDate(v){if(!v)return null;if(/^\d{8}T\d{6}Z$/.test(v))return new Date(v.slice(0,4)+'-'+v.slice(4,6)+'-'+v.slice(6,8)+'T'+v.slice(9,11)+':'+v.slice(11,13)+':'+v.slice(13,15)+'Z');if(/^\d{8}T\d{6}$/.test(v))return new Date(v.slice(0,4)+'-'+v.slice(4,6)+'-'+v.slice(6,8)+'T'+v.slice(9,11)+':'+v.slice(11,13));if(/^\d{8}$/.test(v))return new Date(v.slice(0,4)+'-'+v.slice(4,6)+'-'+v.slice(6,8)+'T00:00');return new Date(v)}function importarICS(){const file=$('ics').files[0];if(!file){$('preview').textContent='Selecione um arquivo .ics.';return}const rd=new FileReader();rd.onload=()=>{const txt=unfoldICS(rd.result),raw=txt.split('BEGIN:VEVENT').slice(1),kw=$('keywords').value.toLowerCase().split(',').map(s=>s.trim()).filter(Boolean),di=$('filtroInicio').value?new Date($('filtroInicio').value+'T00:00'):null,df=$('filtroFim').value?new Date($('filtroFim').value+'T23:59'):null;eventosPreview=raw.map(e=>{const get=k=>{const m=e.match(new RegExp(k+'[^:]*:(.*)'));return m?m[1].trim():''};return{desc:get('SUMMARY')||'Evento da agenda',ini:parseDate(get('DTSTART')),fim:parseDate(get('DTEND'))}}).filter(e=>e.ini&&e.fim).filter(e=>(!di||e.ini>=di)&&(!df||e.ini<=df)).filter(e=>!kw.length||kw.some(k=>e.desc.toLowerCase().includes(k)));$('preview').innerHTML=eventosPreview.length?eventosPreview.map(e=>`<div>• <strong>${e.desc}</strong><br><span class="tiny">${fmt(e.ini)} até ${fmt(e.fim)}</span></div>`).join('<hr>'):'Nenhum evento encontrado com esses filtros.'};rd.readAsText(file)}function confirmarImportacao(){eventosPreview.forEach(e=>addEscala(e.desc,e.ini,e.fim));eventosPreview=[];$('preview').textContent='Eventos adicionados ao cálculo.'}preencherAgora();render();
-</script>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function moeda(centavos) {
+      return (centavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function centavos(id) {
+      return Math.round((parseFloat($(id).value || '0')) * 100);
+    }
+
+    function preencherAgora() {
+      const agora = new Date();
+      const local = new Date(agora.getTime() - agora.getTimezoneOffset() * 60000);
+      $('inicio').value = local.toISOString().slice(0, 16);
+    }
+
+    function tarifa(data) {
+      const dia = data.getDay();
+      const minutos = data.getHours() * 60 + data.getMinutes();
+      const noturno = minutos >= 22 * 60 || minutos <= 5 * 60;
+      const vermelha = dia === 5 || dia === 6 || dia === 0;
+
+      if (vermelha && noturno) return { nome: 'Vermelha · Noturno', valor: centavos('vermelhaNoite') };
+      if (vermelha) return { nome: 'Vermelha · Diurno', valor: centavos('vermelhaDia') };
+      if (noturno) return { nome: 'Azul · Noturno', valor: centavos('azulNoite') };
+      return { nome: 'Azul · Diurno', valor: centavos('azulDia') };
+    }
+
+    function calcularPorMinuto(inicio, horas) {
+      const minutosTotais = Math.round(horas * 60);
+      let total = 0;
+      const partes = {};
+
+      for (let i = 0; i < minutosTotais; i++) {
+        const momento = new Date(inicio.getTime() + i * 60000);
+        const t = tarifa(momento);
+        total += t.valor / 60;
+        partes[t.nome] = (partes[t.nome] || 0) + 1;
+      }
+
+      return { total: Math.round(total), partes };
+    }
+
+    function calcular() {
+      $('erro').textContent = '';
+      const inicioValor = $('inicio').value;
+      const horas = parseFloat($('horas').value);
+
+      if (!inicioValor) {
+        $('erro').textContent = 'Informe a data e hora de início.';
+        return;
+      }
+
+      if (!horas || horas <= 0) {
+        $('erro').textContent = 'Informe uma quantidade válida de horas.';
+        return;
+      }
+
+      const inicio = new Date(inicioValor);
+      const fim = new Date(inicio.getTime() + horas * 3600000);
+      const calculo = calcularPorMinuto(inicio, horas);
+      const diaSemana = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'][inicio.getDay()];
+      const linhas = Object.entries(calculo.partes)
+        .map(([nome, minutos]) => `${nome}: ${(minutos / 60).toFixed(2).replace('.', ',')}h`)
+        .join('<br>');
+
+      $('valorFinal').textContent = moeda(calculo.total);
+      $('detalhe').innerHTML = `
+        <strong>Início:</strong> ${inicio.toLocaleString('pt-BR')} · ${diaSemana}<br>
+        <strong>Término estimado:</strong> ${fim.toLocaleString('pt-BR')}<br>
+        <strong>Total:</strong> ${horas.toString().replace('.', ',')}h<br>
+        ${linhas}<br>
+        <strong>Memória:</strong> cálculo proporcional por minuto trabalhado.
+      `;
+      $('resultado').style.display = 'block';
+      $('btnPdf').style.display = 'block';
+    }
+
+    $('inicio').addEventListener('keydown', (e) => { if (e.key === 'Enter') calcular(); });
+    $('horas').addEventListener('keydown', (e) => { if (e.key === 'Enter') calcular(); });
+    preencherAgora();
+  </script>
 </body>
 </html>
