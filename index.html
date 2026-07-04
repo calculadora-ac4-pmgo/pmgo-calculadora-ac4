@@ -311,8 +311,7 @@
       .print-header img { width: 60px; height: 60px; }
       .print-header h1 { font-size: 16pt; margin: 0; }
       
-      /* Dados do Policial no PDF */
-      .print-dados { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; padding: 12px; border: 1px solid #ccc; border-radius: 8px; }
+
       
       .metrics-grid { display: flex; gap: 10px; margin-bottom: 24px; }
       .metric-card { flex: 1; padding: 12px; border: 1px solid black; border-radius: 0; box-shadow: none; }
@@ -325,7 +324,7 @@
       .print-footer { display: block !important; margin-top: 40px; font-size: 8pt; text-align: center; color: #666; border-top: 1px solid #ccc; padding-top: 10px; }
     }
 
-    .print-header, .print-dados, .print-footer { display: none; }
+    .print-header, .print-footer { display: none; }
 
   </style>
 </head>
@@ -357,42 +356,14 @@
     </div>
   </div>
 
-  <div class="print-dados" id="printDadosContainer">
-    <div><strong>Nome:</strong> <span id="pNome"></span></div>
-    <div><strong>Posto/Grad.:</strong> <span id="pPosto"></span></div>
-    <div><strong>Unidade:</strong> <span id="pUnidade"></span></div>
-    <div><strong>Referência:</strong> <span id="pMes"></span></div>
-  </div>
+
 
   <main class="layout">
     
     <!-- Coluna Esquerda: Inputs -->
     <aside class="left-col">
       
-      <div class="panel">
-        <div class="panel-header">
-          <span class="material-symbols-outlined">person</span>
-          Policial
-        </div>
-        <div class="input-group">
-          <label>Nome Completo</label>
-          <input type="text" class="input-control" id="nomePolicial" placeholder="Ex: Sgt João da Silva" oninput="sincronizarImpressao()" />
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div class="input-group">
-            <label>Posto/Grad.</label>
-            <input type="text" class="input-control" id="postoGraduacao" placeholder="Ex: 3º SGT" oninput="sincronizarImpressao()" />
-          </div>
-          <div class="input-group">
-            <label>Unidade</label>
-            <input type="text" class="input-control" id="unidade" placeholder="Ex: 19º CRPM" oninput="sincronizarImpressao()" />
-          </div>
-        </div>
-        <div class="input-group" style="margin-bottom: 0;">
-          <label>Mês de Referência</label>
-          <input type="text" class="input-control" id="mesReferencia" placeholder="Ex: Jul/2026" oninput="sincronizarImpressao()" />
-        </div>
-      </div>
+
 
       <div class="panel">
         <div class="panel-header">
@@ -501,13 +472,7 @@
       setInterval(() => { $('printDate').textContent = new Date().toLocaleString('pt-BR'); }, 1000);
     }
 
-    // --- Reatividade ---
-    function sincronizarImpressao() {
-      $('pNome').textContent = $('nomePolicial').value || '-';
-      $('pPosto').textContent = $('postoGraduacao').value || '-';
-      $('pUnidade').textContent = $('unidade').value || '-';
-      $('pMes').textContent = $('mesReferencia').value || '-';
-    }
+
 
     // --- Lógica Principal ---
     function adicionarEscala() {
