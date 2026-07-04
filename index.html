@@ -4,361 +4,943 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculadora AC4 - 19º CRPM</title>
+  
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
   <style>
     :root {
-      --verde: #007a3d;
-      --verde-escuro: #064b2f;
-      --azul: #1f5f85;
-      --dourado: #d6b25e;
-      --texto: #102a43;
-      --muted: #667085;
-      --borda: #d8e2ec;
-      --bg: #eef3f7;
-      --card: #ffffff;
-      --erro: #b42318;
+      /* Google Material 3 Inspired Palette mixed with PMGO colors */
+      --md-sys-color-primary: #006b3a; /* PMGO Green */
+      --md-sys-color-on-primary: #ffffff;
+      --md-sys-color-primary-container: #8ef7b5;
+      --md-sys-color-on-primary-container: #00210e;
+      
+      --md-sys-color-secondary: #00658f; /* Blue */
+      --md-sys-color-on-secondary: #ffffff;
+      --md-sys-color-secondary-container: #c7e7ff;
+      --md-sys-color-on-secondary-container: #001e2e;
+
+      --md-sys-color-tertiary: #755b00; /* Gold */
+      --md-sys-color-on-tertiary: #ffffff;
+      --md-sys-color-tertiary-container: #ffe084;
+      
+      --md-sys-color-error: #ba1a1a;
+      --md-sys-color-background: #fbfdf9;
+      --md-sys-color-surface: #fbfdf9;
+      --md-sys-color-surface-variant: #dce5dd;
+      --md-sys-color-on-surface: #191c1a;
+      --md-sys-color-on-surface-variant: #404943;
+      --md-sys-color-outline: #707973;
+      
+      --elevation-1: 0px 1px 2px 0px rgba(0,0,0,0.3), 0px 1px 3px 1px rgba(0,0,0,0.15);
+      --elevation-2: 0px 1px 2px 0px rgba(0,0,0,0.3), 0px 2px 6px 2px rgba(0,0,0,0.15);
+      --elevation-3: 0px 1px 3px 0px rgba(0,0,0,0.3), 0px 4px 8px 3px rgba(0,0,0,0.15);
     }
 
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0;
+    }
 
     body {
-      margin: 0;
-      min-height: 100vh;
+      background-color: var(--md-sys-color-background);
+      color: var(--md-sys-color-on-surface);
+      font-family: 'Roboto', sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 24px 16px;
+    }
+
+    h1, h2, h3, .title {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      background: radial-gradient(circle at top, #ffffff 0, var(--bg) 54%, #e4ebf1 100%);
-      color: var(--texto);
-      font-family: "Segoe UI", Arial, sans-serif;
+      flex-direction: column;
+      gap: 24px;
     }
 
-    .app {
-      width: 100%;
-      max-width: 520px;
-      background: var(--card);
-      border-radius: 24px;
-      box-shadow: 0 20px 45px rgba(16, 42, 67, 0.16);
-      padding: 26px;
-      border: 1px solid rgba(216, 226, 236, 0.9);
-    }
-
-    .topo {
+    /* Header */
+    .header {
       text-align: center;
-      border-bottom: 1px solid var(--borda);
-      padding-bottom: 18px;
-      margin-bottom: 18px;
+      padding: 24px 0;
+      position: relative;
+    }
+    
+    .brasao-container {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 16px;
+      position: relative;
     }
 
     .brasao {
-      width: 86px;
-      height: 86px;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
-      margin: 0 auto 8px;
-      display: block;
     }
 
     .brasao-fallback {
-      width: 78px;
-      height: 78px;
-      border-radius: 18px;
-      margin: 0 auto 10px;
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
       display: none;
       place-items: center;
-      background: linear-gradient(135deg, #fff8df, var(--dourado));
-      color: var(--verde-escuro);
-      font-weight: 900;
-      font-size: 15px;
-      line-height: 1.05;
-      box-shadow: 0 8px 16px rgba(0,0,0,.12);
+      background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-tertiary-container));
+      color: var(--md-sys-color-primary);
+      font-weight: 700;
+      font-size: 16px;
+      text-align: center;
+      line-height: 1.2;
+      box-shadow: var(--elevation-1);
     }
 
-    h1 {
-      margin: 0;
-      font-size: 25px;
-      color: #09233a;
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+      letter-spacing: -0.5px;
     }
 
-    .subtitulo {
-      margin-top: 6px;
-      font-size: 14px;
-      color: var(--muted);
+    .header p {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 1rem;
+      margin-top: 4px;
     }
 
-    .subtitulo strong { color: #c0392b; }
+    /* Cards */
+    .card {
+      background: var(--md-sys-color-surface);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--elevation-1);
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--elevation-2);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--md-sys-color-primary);
+    }
+
+    .card-title .material-symbols-outlined {
+      font-size: 28px;
+    }
+
+    /* Forms */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
     label {
-      display: block;
-      margin: 14px 0 6px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #243b53;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface-variant);
     }
 
-    input {
-      width: 100%;
-      border: 2px solid var(--borda);
-      border-radius: 14px;
-      padding: 13px 14px;
-      font-size: 16px;
-      background: #fbfdff;
-      transition: .2s;
+    input, textarea, select {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1rem;
+      padding: 14px 16px;
+      border: 1px solid var(--md-sys-color-outline);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--md-sys-color-on-surface);
+      transition: all 0.2s ease;
     }
 
-    input:focus {
-      border-color: var(--azul);
+    input:focus, textarea:focus, select:focus {
       outline: none;
-      box-shadow: 0 0 0 4px rgba(31, 95, 133, .12);
-      background: #fff;
+      border-color: var(--md-sys-color-primary);
+      border-width: 2px;
+      padding: 13px 15px; /* compensate for border width */
+      box-shadow: 0 4px 12px rgba(0, 107, 58, 0.1);
+    }
+    
+    input[type="file"] {
+      padding: 10px;
+      font-size: 0.875rem;
     }
 
-    .linha-horas {
-      display: grid;
-      grid-template-columns: 1fr 70px;
-      gap: 10px;
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
       align-items: center;
-    }
-
-    .linha-horas span {
-      font-weight: 700;
-      color: #243b53;
-    }
-
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 15px;
-      padding: 15px 16px;
-      margin-top: 18px;
-      font-size: 17px;
-      font-weight: 800;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: 'Outfit', sans-serif;
+      border-radius: 100px; /* Pill shape - Material 3 */
+      border: none;
       cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
     }
 
-    .btn-calcular {
-      background: var(--azul);
-      color: #fff;
+    .btn:active {
+      transform: scale(0.98);
     }
 
-    .btn-pdf {
-      background: var(--verde);
-      color: #fff;
-      margin-top: 10px;
-      display: none;
+    .btn-primary {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      box-shadow: var(--elevation-1);
+    }
+    .btn-primary:hover { background-color: #005a30; box-shadow: var(--elevation-2); }
+
+    .btn-secondary {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+    .btn-secondary:hover { background-color: #b0dfff; }
+
+    .btn-tertiary {
+      background-color: transparent;
+      color: var(--md-sys-color-primary);
+      border: 1px solid var(--md-sys-color-outline);
+    }
+    .btn-tertiary:hover { background-color: rgba(0, 107, 58, 0.08); }
+
+    .btn-icon-only {
+      padding: 8px;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .btn-icon-only:hover {
+      background: rgba(0,0,0,0.05);
+      color: var(--md-sys-color-error);
     }
 
-    .resultado {
-      display: none;
-      margin-top: 22px;
-      background: #eaf4fb;
-      border-left: 7px solid var(--azul);
-      border-radius: 17px;
-      padding: 18px 20px;
+    /* Lista de Escalas */
+    .escalas-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
     }
 
-    .resultado small {
+    .escala-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-surface-variant);
+      border-radius: 16px;
+      transition: background 0.2s;
+    }
+    
+    .escala-item:hover {
+      background: var(--md-sys-color-primary-container);
+      border-color: transparent;
+    }
+
+    .escala-info strong {
       display: block;
-      text-transform: uppercase;
-      letter-spacing: .4px;
-      font-weight: 800;
-      color: #2c3e50;
-      margin-bottom: 6px;
+      font-size: 1.05rem;
+      color: var(--md-sys-color-on-surface);
+      margin-bottom: 4px;
     }
 
-    .valor {
-      font-size: 34px;
-      line-height: 1;
-      font-weight: 900;
-      color: #0b2f4a;
+    .escala-info span {
+      font-size: 0.875rem;
+      color: var(--md-sys-color-on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .escala-info span .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .empty-state .material-symbols-outlined {
+      font-size: 48px;
+      opacity: 0.5;
       margin-bottom: 12px;
     }
 
-    .detalhe {
-      border-top: 1px solid #c9d8e5;
-      padding-top: 11px;
-      font-size: 14px;
-      color: #243b53;
-      line-height: 1.45;
+    /* Feedback messages */
+    .msg {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-top: 16px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .msg-error {
+      background: #ffdad6;
+      color: var(--md-sys-color-error);
+      display: flex;
+    }
+    .msg-success {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      display: flex;
     }
 
-    .erro {
-      color: var(--erro);
-      font-weight: 700;
+    /* Results */
+    .resumo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .resumo-card {
+      background: linear-gradient(135deg, var(--md-sys-color-secondary-container), #e3f2fd);
+      padding: 20px;
+      border-radius: 20px;
       text-align: center;
-      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .resumo-card.destaque {
+      background: linear-gradient(135deg, var(--md-sys-color-primary), #004d29);
+      color: white;
+    }
+    .resumo-card.destaque span { color: rgba(255,255,255,0.8); }
+    .resumo-card.destaque strong { color: white; }
+
+    .resumo-card span {
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--md-sys-color-on-secondary-container);
+      margin-bottom: 8px;
+    }
+
+    .resumo-card strong {
+      font-size: 1.8rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: var(--md-sys-color-on-secondary-container);
+      line-height: 1;
+    }
+
+    .detalhe-memoria {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px dashed var(--md-sys-color-outline);
+      font-size: 0.9rem;
+      color: var(--md-sys-color-on-surface-variant);
     }
 
     details {
       margin-top: 16px;
-      border-top: 1px solid var(--borda);
-      padding-top: 12px;
     }
-
     summary {
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--muted);
+      font-weight: 500;
+      color: var(--md-sys-color-primary);
+      user-select: none;
     }
 
-    .valores-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 8px;
+    /* Config Panel */
+    .config-panel {
+      background: var(--md-sys-color-surface-variant);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 12px;
     }
 
-    .valores-grid label { font-size: 12px; margin-top: 8px; }
-    .valores-grid input { font-size: 14px; padding: 10px; }
-
-    .aviso {
-      margin-top: 18px;
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.45;
-    }
-
-    @media (max-width: 480px) {
-      .app { padding: 21px 16px; }
-      h1 { font-size: 22px; }
-      .valor { font-size: 30px; }
-    }
-
+    /* Print Styles */
     @media print {
-      body { background: #fff; display: block; padding: 0; }
-      .app { box-shadow: none; max-width: none; border: 0; }
-      .btn-calcular, .btn-pdf, details, .erro { display: none !important; }
-      .resultado { display: block !important; border: 1px solid #999; border-left: 7px solid #333; }
+      @page { margin: 15mm; size: A4; }
+      body { background: white; padding: 0; color: black; }
+      .container { max-width: 100%; gap: 0; }
+      .card { box-shadow: none; border: none; padding: 0; margin-bottom: 20px; border-radius: 0; }
+      .card-title { border-bottom: 2px solid black; padding-bottom: 8px; margin-bottom: 16px; color: black; }
+      
+      /* Hide inputs and buttons */
+      .form-group, .btn-row, .btn, details, .import-box, .empty-state, .msg { display: none !important; }
+      
+      /* Format Header for document */
+      .header { text-align: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
+      .brasao-container { width: 80px; height: 80px; margin: 0 auto 10px; }
+      .header h1 { font-size: 18pt; color: black; }
+      .header p { font-size: 12pt; color: #333; }
+
+      /* Show only printed versions of data */
+      .print-only { display: block !important; }
+
+      /* Lista de Escalas on Print */
+      .escalas-container { display: table; width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .escala-item { 
+        display: table-row; 
+        border: none; 
+        border-bottom: 1px solid #ccc;
+        background: transparent !important;
+      }
+      .escala-info { display: table-cell; padding: 8px 0; }
+      .escala-info strong { font-size: 12pt; display: inline; margin-right: 15px; }
+      .escala-info span { display: inline; margin-right: 15px; color: black; }
+      .escala-info span .material-symbols-outlined { display: none; }
+      
+      /* Resultado on Print */
+      .resumo-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+      .resumo-card { 
+        border: 1px solid black; 
+        background: white !important;
+        color: black !important;
+        border-radius: 0;
+        padding: 10px;
+        flex: 1 1 200px;
+      }
+      .resumo-card.destaque { border: 2px solid black; }
+      .resumo-card.destaque span, .resumo-card.destaque strong { color: black !important; }
+
+      /* Footer for print */
+      .print-footer {
+        display: block !important;
+        margin-top: 40px;
+        padding-top: 10px;
+        border-top: 1px solid black;
+        font-size: 10pt;
+        text-align: center;
+        color: #555;
+      }
     }
+
+    .print-only, .print-footer { display: none; }
+
+    /* Modal for ICS Import Preview */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    
+    .modal {
+      background: var(--md-sys-color-surface);
+      border-radius: 24px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--elevation-3);
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.active .modal { transform: translateY(0); }
+    
+    .modal-header { padding: 24px; border-bottom: 1px solid var(--md-sys-color-surface-variant); }
+    .modal-body { padding: 24px; overflow-y: auto; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--md-sys-color-surface-variant); display: flex; justify-content: flex-end; gap: 12px; }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--md-sys-color-outline);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .checkbox-item:hover { background: rgba(0,0,0,0.02); }
+    .checkbox-item input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--md-sys-color-primary); }
+
   </style>
 </head>
 <body>
-  <main class="app">
-    <header class="topo">
-      <img class="brasao" src="assets/brasao-19crpm.png" alt="Brasão do 19º CRPM" onerror="this.style.display='none';document.getElementById('fallback').style.display='grid'" />
-      <div id="fallback" class="brasao-fallback">19º<br>CRPM<br>PMGO</div>
-      <h1>⏱️ AC4</h1>
-      <div class="subtitulo">Serviço Extraordinário · <strong>PORTARIA SSP Nº 621/2026</strong></div>
+  
+  <div class="container">
+    <header class="header">
+      <div class="brasao-container">
+        <img class="brasao" src="assets/brasao-19crpm.png" alt="Brasão do 19º CRPM" onerror="this.style.display='none';document.getElementById('fallback').style.display='grid'" />
+        <div id="fallback" class="brasao-fallback">19º<br>CRPM<br>PMGO</div>
+      </div>
+      <h1>Calculadora AC4</h1>
+      <p>Serviço Extraordinário · Portaria SSP Nº 621/2026</p>
     </header>
 
-    <label for="inicio">📅 Data e hora de início do serviço</label>
-    <input type="datetime-local" id="inicio" />
+    <div id="msgGlobal" class="msg"></div>
 
-    <label for="horas">⏳ Quantidade de horas trabalhadas</label>
-    <div class="linha-horas">
-      <input type="number" id="horas" min="0.5" step="0.5" value="1" />
-      <span>horas</span>
-    </div>
-
-    <button class="btn-calcular" onclick="calcular()">🔢 Calcular valor</button>
-
-    <section class="resultado" id="resultado">
-      <small>Valor estimado a receber</small>
-      <div class="valor" id="valorFinal">R$ 0,00</div>
-      <div class="detalhe" id="detalhe"></div>
+    <section class="card" id="cardDados">
+      <h2 class="card-title">
+        <span class="material-symbols-outlined">badge</span>
+        Dados do Policial
+      </h2>
+      <div class="grid">
+        <div class="form-group">
+          <label for="nomePolicial">Nome Completo</label>
+          <input type="text" id="nomePolicial" placeholder="Ex.: Sgt João da Silva" />
+        </div>
+        <div class="form-group">
+          <label for="postoGraduacao">Posto / Graduação</label>
+          <input type="text" id="postoGraduacao" placeholder="Ex.: 3º SGT" />
+        </div>
+        <div class="form-group">
+          <label for="unidade">Unidade</label>
+          <input type="text" id="unidade" placeholder="Ex.: 19º CRPM" />
+        </div>
+        <div class="form-group">
+          <label for="mesReferencia">Mês de Referência</label>
+          <input type="text" id="mesReferencia" placeholder="Ex.: Julho/2026" />
+        </div>
+      </div>
+      
+      <!-- Printed version of data -->
+      <div class="print-only">
+        <p><strong>Policial:</strong> <span id="printNome"></span> (<span id="printPosto"></span>)</p>
+        <p><strong>Unidade:</strong> <span id="printUnidade"></span> &nbsp;|&nbsp; <strong>Mês Referência:</strong> <span id="printMes"></span></p>
+      </div>
     </section>
 
-    <button class="btn-pdf" id="btnPdf" onclick="window.print()">📄 Salvar em PDF</button>
-
-    <div id="erro" class="erro"></div>
-
-    <details>
-      <summary>Ajustar valores da tabela, se necessário</summary>
-      <div class="valores-grid">
-        <div><label>Azul diurno</label><input id="azulDia" type="number" value="30" step="0.01" /></div>
-        <div><label>Azul noturno</label><input id="azulNoite" type="number" value="33" step="0.01" /></div>
-        <div><label>Vermelha diurna</label><input id="vermelhaDia" type="number" value="40" step="0.01" /></div>
-        <div><label>Vermelha noturna</label><input id="vermelhaNoite" type="number" value="45" step="0.01" /></div>
+    <section class="card">
+      <h2 class="card-title">
+        <span class="material-symbols-outlined">event_note</span>
+        Lançamento de Escalas
+      </h2>
+      
+      <div class="grid form-group">
+        <div class="form-group">
+          <label for="escalaInicio">Data e Hora de Início</label>
+          <input type="datetime-local" id="escalaInicio" />
+        </div>
+        <div class="form-group">
+          <label for="escalaFim">Data e Hora de Término</label>
+          <input type="datetime-local" id="escalaFim" />
+        </div>
       </div>
-    </details>
+      <div class="form-group" style="margin-top: 16px;">
+        <label for="escalaDescricao">Descrição da Escala</label>
+        <textarea id="escalaDescricao" placeholder="Ex.: Policiamento de Evento, AC4, etc."></textarea>
+      </div>
+      
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="adicionarEscalaManual()">
+          <span class="material-symbols-outlined">add</span>
+          Adicionar Escala
+        </button>
+        <button class="btn btn-tertiary" onclick="document.getElementById('icsFile').click()">
+          <span class="material-symbols-outlined">upload_file</span>
+          Importar do Google Agenda (.ics)
+        </button>
+        <input type="file" id="icsFile" accept=".ics" style="display: none;" onchange="importarIcsArquivo(event)" />
+      </div>
 
-    <div class="aviso">
-      Cálculo de apoio. O pagamento final depende da escala validada, da tabela oficial vigente e da conferência administrativa.
+      <div class="escalas-container" id="listaEscalas">
+        <!-- Renderizado via JS -->
+      </div>
+    </section>
+
+    <section class="card" id="cardResultado">
+      <h2 class="card-title">
+        <span class="material-symbols-outlined">calculate</span>
+        Resumo e Relatório
+      </h2>
+      
+      <div class="btn-row" style="margin-bottom: 24px;">
+        <button class="btn btn-primary" onclick="calcularTotal()">
+          <span class="material-symbols-outlined">functions</span>
+          Processar Cálculo
+        </button>
+        <button class="btn btn-tertiary" onclick="gerarIcs()" id="btnGerarIcs" style="display: none;">
+          <span class="material-symbols-outlined">calendar_month</span>
+          Gerar .ics
+        </button>
+        <button class="btn btn-tertiary" onclick="prepararImpressao()" id="btnImprimir" style="display: none;">
+          <span class="material-symbols-outlined">print</span>
+          Salvar PDF / Imprimir
+        </button>
+      </div>
+
+      <div id="areaResultado" style="display: none;">
+        <div class="resumo-grid" id="resumoGrid">
+          <!-- Renderizado via JS -->
+        </div>
+        <div class="detalhe-memoria" id="memoriaCalculo">
+          <!-- Renderizado via JS -->
+        </div>
+      </div>
+      
+      <details>
+        <summary><span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px; margin-right: 4px;">settings</span>Avançado: Configurar Tabela de Valores Vigente</summary>
+        <div class="config-panel grid">
+          <div class="form-group">
+            <label>Azul Diurno (R$)</label>
+            <input id="azulDia" type="number" value="30" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Azul Noturno (R$)</label>
+            <input id="azulNoite" type="number" value="33" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Vermelha Diurna (R$)</label>
+            <input id="vermelhaDia" type="number" value="40" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Vermelha Noturna (R$)</label>
+            <input id="vermelhaNoite" type="number" value="45" step="0.01" />
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <footer class="print-footer">
+      Documento gerado em <span id="dataGeracao"></span>.<br>
+      <strong>Atenção:</strong> Esta é uma simulação de apoio. O pagamento final depende de auditoria administrativa, validação da escala efetivamente cumprida e da tabela oficial vigente expedida pela SSP.
+    </footer>
+  </div>
+
+  <!-- Modal ICS Preview -->
+  <div class="modal-overlay" id="icsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="title" style="color: var(--md-sys-color-primary)">Revisar Importação</h2>
+        <p style="font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;">
+          Filtramos os eventos que contêm "AC4" ou "Extra". Selecione quais deseja incluir.
+        </p>
+      </div>
+      <div class="modal-body" id="icsModalBody">
+        <!-- Checkboxes injectados via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-tertiary" onclick="fecharModalIcs()">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarImportacaoIcs()">Importar Selecionados</button>
+      </div>
     </div>
-  </main>
+  </div>
 
   <script>
     const $ = (id) => document.getElementById(id);
+    const state = { escalas: [], eventosIcsPendentes: [] };
 
-    function moeda(centavos) {
-      return (centavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    // Utilitários de Data e Moeda
+    const moeda = (c) => (c / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const centavos = (id) => Math.round((parseFloat($(id).value || '0')) * 100);
+    const formataDataHora = (iso) => new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    const calculaDuracaoStr = (ini, fim) => {
+      const min = Math.max(0, Math.round((new Date(fim) - new Date(ini)) / 60000));
+      return `${Math.floor(min / 60)}h ${String(min % 60).padStart(2, '0')}m`;
+    };
+
+    function mostrarMensagem(texto, tipo = 'success') {
+      const el = $('msgGlobal');
+      el.textContent = texto;
+      el.className = 'msg ' + (tipo === 'error' ? 'msg-error' : 'msg-success');
+      el.style.display = 'flex';
+      setTimeout(() => { el.style.display = 'none'; }, 4000);
     }
 
-    function centavos(id) {
-      return Math.round((parseFloat($(id).value || '0')) * 100);
-    }
-
-    function preencherAgora() {
+    function init() {
       const agora = new Date();
       const local = new Date(agora.getTime() - agora.getTimezoneOffset() * 60000);
-      $('inicio').value = local.toISOString().slice(0, 16);
+      $('escalaInicio').value = local.toISOString().slice(0, 16);
+      $('escalaFim').value = new Date(local.getTime() + 8 * 3600000).toISOString().slice(0, 16);
+      renderizarEscalas();
     }
 
-    function tarifa(data) {
+    function adicionarEscalaManual() {
+      const inicio = $('escalaInicio').value;
+      const fim = $('escalaFim').value;
+      const descricao = $('escalaDescricao').value.trim();
+
+      if (!inicio || !fim) return mostrarMensagem('Informe início e término.', 'error');
+      if (new Date(fim) <= new Date(inicio)) return mostrarMensagem('Término deve ser maior que início.', 'error');
+      if (!descricao) return mostrarMensagem('A descrição é obrigatória.', 'error');
+
+      state.escalas.push({ inicio, fim, descricao, id: Date.now() });
+      $('escalaDescricao').value = '';
+      renderizarEscalas();
+      mostrarMensagem('Escala adicionada!');
+    }
+
+    function removerEscala(id) {
+      state.escalas = state.escalas.filter(e => e.id !== id);
+      renderizarEscalas();
+      $('areaResultado').style.display = 'none';
+      $('btnGerarIcs').style.display = 'none';
+      $('btnImprimir').style.display = 'none';
+    }
+
+    function renderizarEscalas() {
+      const container = $('listaEscalas');
+      if (!state.escalas.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <span class="material-symbols-outlined">event_busy</span>
+            <p>Nenhuma escala lançada.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = state.escalas.map(e => `
+        <div class="escala-item">
+          <div class="escala-info">
+            <strong>${e.descricao}</strong>
+            <span>
+              <span class="material-symbols-outlined">schedule</span>
+              ${formataDataHora(e.inicio)} até ${formataDataHora(e.fim)} &nbsp;&bull;&nbsp; ${calculaDuracaoStr(e.inicio, e.fim)}
+            </span>
+          </div>
+          <button class="btn-icon-only" onclick="removerEscala(${e.id})" title="Remover">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // --- Motor de Cálculo ---
+    function getTarifaPorMinuto(data) {
       const dia = data.getDay();
-      const minutos = data.getHours() * 60 + data.getMinutes();
-      const noturno = minutos >= 22 * 60 || minutos <= 5 * 60;
-      const vermelha = dia === 5 || dia === 6 || dia === 0;
+      const min = data.getHours() * 60 + data.getMinutes();
+      const isNoite = min >= 22 * 60 || min <= 5 * 60;
+      const isVermelha = dia === 5 || dia === 6 || dia === 0;
 
-      if (vermelha && noturno) return { nome: 'Vermelha · Noturno', valor: centavos('vermelhaNoite') };
-      if (vermelha) return { nome: 'Vermelha · Diurno', valor: centavos('vermelhaDia') };
-      if (noturno) return { nome: 'Azul · Noturno', valor: centavos('azulNoite') };
-      return { nome: 'Azul · Diurno', valor: centavos('azulDia') };
+      if (isVermelha && isNoite) return { nome: 'Vermelha Noturno', val: centavos('vermelhaNoite') };
+      if (isVermelha) return { nome: 'Vermelha Diurno', val: centavos('vermelhaDia') };
+      if (isNoite) return { nome: 'Azul Noturno', val: centavos('azulNoite') };
+      return { nome: 'Azul Diurno', val: centavos('azulDia') };
     }
 
-    function calcularPorMinuto(inicio, horas) {
-      const minutosTotais = Math.round(horas * 60);
-      let total = 0;
-      const partes = {};
+    function calcularTotal() {
+      if (!state.escalas.length) return mostrarMensagem('Adicione escalas primeiro.', 'error');
+      
+      let totMin = 0, totDiurno = 0, totNoturno = 0, totValor = 0;
+      const memoria = {};
 
-      for (let i = 0; i < minutosTotais; i++) {
-        const momento = new Date(inicio.getTime() + i * 60000);
-        const t = tarifa(momento);
-        total += t.valor / 60;
-        partes[t.nome] = (partes[t.nome] || 0) + 1;
-      }
+      state.escalas.forEach(e => {
+        const ini = new Date(e.inicio);
+        const mins = Math.max(1, Math.round((new Date(e.fim) - ini) / 60000));
+        
+        for (let i = 0; i < mins; i++) {
+          const momento = new Date(ini.getTime() + i * 60000);
+          const t = getTarifaPorMinuto(momento);
+          
+          totValor += t.val / 60;
+          memoria[t.nome] = (memoria[t.nome] || 0) + 1;
+          
+          if (t.nome.includes('Noturno')) totNoturno++;
+          else totDiurno++;
+        }
+        totMin += mins;
+      });
 
-      return { total: Math.round(total), partes };
-    }
-
-    function calcular() {
-      $('erro').textContent = '';
-      const inicioValor = $('inicio').value;
-      const horas = parseFloat($('horas').value);
-
-      if (!inicioValor) {
-        $('erro').textContent = 'Informe a data e hora de início.';
-        return;
-      }
-
-      if (!horas || horas <= 0) {
-        $('erro').textContent = 'Informe uma quantidade válida de horas.';
-        return;
-      }
-
-      const inicio = new Date(inicioValor);
-      const fim = new Date(inicio.getTime() + horas * 3600000);
-      const calculo = calcularPorMinuto(inicio, horas);
-      const diaSemana = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'][inicio.getDay()];
-      const linhas = Object.entries(calculo.partes)
-        .map(([nome, minutos]) => `${nome}: ${(minutos / 60).toFixed(2).replace('.', ',')}h`)
-        .join('<br>');
-
-      $('valorFinal').textContent = moeda(calculo.total);
-      $('detalhe').innerHTML = `
-        <strong>Início:</strong> ${inicio.toLocaleString('pt-BR')} · ${diaSemana}<br>
-        <strong>Término estimado:</strong> ${fim.toLocaleString('pt-BR')}<br>
-        <strong>Total:</strong> ${horas.toString().replace('.', ',')}h<br>
-        ${linhas}<br>
-        <strong>Memória:</strong> cálculo proporcional por minuto trabalhado.
+      // Render Dashboard
+      $('resumoGrid').innerHTML = `
+        <div class="resumo-card">
+          <span>Horas Totais</span>
+          <strong>${(totMin / 60).toFixed(2).replace('.', ',')}h</strong>
+        </div>
+        <div class="resumo-card">
+          <span>Diurno / Noturno</span>
+          <strong>${(totDiurno / 60).toFixed(1)} / ${(totNoturno / 60).toFixed(1)}</strong>
+        </div>
+        <div class="resumo-card destaque">
+          <span>Valor Estimado</span>
+          <strong>${moeda(totValor)}</strong>
+        </div>
       `;
-      $('resultado').style.display = 'block';
-      $('btnPdf').style.display = 'block';
+
+      // Render Memória
+      const linhasMemoria = Object.entries(memoria)
+        .map(([n, m]) => `<li>${n}: ${(m / 60).toFixed(2).replace('.', ',')}h</li>`)
+        .join('');
+      
+      $('memoriaCalculo').innerHTML = `
+        <p><strong>Memória de Cálculo (por minuto):</strong></p>
+        <ul style="margin-left: 20px; margin-top: 8px;">${linhasMemoria}</ul>
+      `;
+
+      $('areaResultado').style.display = 'block';
+      $('btnGerarIcs').style.display = 'inline-flex';
+      $('btnImprimir').style.display = 'inline-flex';
+      
+      // Scroll smooth para resultado
+      $('cardResultado').scrollIntoView({ behavior: 'smooth' });
     }
 
-    $('inicio').addEventListener('keydown', (e) => { if (e.key === 'Enter') calcular(); });
-    $('horas').addEventListener('keydown', (e) => { if (e.key === 'Enter') calcular(); });
-    preencherAgora();
+    // --- Importação .ICS Segura ---
+    function parseIcsDate(v) {
+      if (!v) return null;
+      const txt = String(v).trim().toUpperCase();
+      const z = txt.endsWith('Z');
+      const b = txt.replace(/^VALUE=DATE-TIME:/i, '').replace(/Z$/, '');
+      const d = new Date(Date.UTC(b.slice(0,4), b.slice(4,6)-1, b.slice(6,8), b.slice(9,11)||0, b.slice(11,13)||0, b.slice(13,15)||0));
+      return z ? d : new Date(b.slice(0,4), b.slice(4,6)-1, b.slice(6,8), b.slice(9,11)||0, b.slice(11,13)||0, b.slice(13,15)||0);
+    }
+
+    function importarIcsArquivo(ev) {
+      const file = ev.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = () => {
+        const lines = (reader.result || '').split(/\r?\n/);
+        const eventos = [];
+        let curr = null;
+
+        lines.forEach(l => {
+          const lt = l.trim();
+          if (lt === 'BEGIN:VEVENT') curr = {};
+          else if (lt === 'END:VEVENT' && curr) { eventos.push(curr); curr = null; }
+          else if (curr) {
+            if (lt.startsWith('DTSTART')) curr.ini = parseIcsDate(lt.split(':').slice(1).join(':'));
+            else if (lt.startsWith('DTEND')) curr.fim = parseIcsDate(lt.split(':').slice(1).join(':'));
+            else if (lt.startsWith('SUMMARY:')) curr.desc = lt.replace('SUMMARY:', '').trim();
+          }
+        });
+
+        // Filtrar por palavras-chave de interesse
+        const keywords = ['AC4', 'EXTRA', 'SERVIÇO', 'PLANTÃO'];
+        state.eventosIcsPendentes = eventos
+          .filter(e => e.ini && e.fim && e.desc)
+          .filter(e => {
+            const up = e.desc.toUpperCase();
+            return keywords.some(k => up.includes(k));
+          })
+          .map((e, i) => ({
+            id: 'ics_' + i,
+            inicio: e.ini.toISOString().slice(0, 16),
+            fim: e.fim.toISOString().slice(0, 16),
+            descricao: e.desc
+          }));
+
+        if (!state.eventosIcsPendentes.length) {
+          mostrarMensagem('Nenhum evento AC4 ou Extra encontrado no arquivo.', 'error');
+        } else {
+          abrirModalIcs();
+        }
+        $('icsFile').value = ''; // reseta
+      };
+      reader.readAsText(file);
+    }
+
+    function abrirModalIcs() {
+      const html = state.eventosIcsPendentes.map(e => `
+        <label class="checkbox-item">
+          <input type="checkbox" value="${e.id}" checked />
+          <div>
+            <strong>${e.descricao}</strong><br>
+            <span style="font-size: 0.85rem; color: #666">${formataDataHora(e.inicio)} - ${formataDataHora(e.fim)}</span>
+          </div>
+        </label>
+      `).join('');
+      $('icsModalBody').innerHTML = html;
+      $('icsModal').classList.add('active');
+    }
+
+    function fecharModalIcs() {
+      $('icsModal').classList.remove('active');
+      state.eventosIcsPendentes = [];
+    }
+
+    function confirmarImportacaoIcs() {
+      const selecionadosIds = Array.from(document.querySelectorAll('#icsModalBody input:checked')).map(el => el.value);
+      const paraImportar = state.eventosIcsPendentes.filter(e => selecionadosIds.includes(e.id));
+      
+      paraImportar.forEach(e => {
+        state.escalas.push({ ...e, id: Date.now() + Math.random() }); // novo ID unico
+      });
+      
+      renderizarEscalas();
+      fecharModalIcs();
+      mostrarMensagem(`${paraImportar.length} eventos importados com sucesso!`);
+    }
+
+    // --- Exportação ICS ---
+    function gerarIcs() {
+      if(!state.escalas.length) return;
+      const fmt = (d) => new Date(d).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      
+      const linhas = [
+        'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//PMGO//Calculadora AC4//PT-BR','CALSCALE:GREGORIAN',
+        ...state.escalas.flatMap((e, i) => [
+          'BEGIN:VEVENT',
+          `UID:ac4-${Date.now()}-${i}@pmgo`,
+          `DTSTAMP:${fmt(new Date())}`,
+          `DTSTART:${fmt(e.inicio)}`,
+          `DTEND:${fmt(e.fim)}`,
+          `SUMMARY:${e.descricao.replace(/,/g, '\\,')}`,
+          'END:VEVENT'
+        ]),
+        'END:VCALENDAR'
+      ];
+      
+      const blob = new Blob([linhas.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'minhas-escalas-ac4.ics';
+      link.click();
+    }
+
+    // --- Impressão ---
+    function prepararImpressao() {
+      $('printNome').textContent = $('nomePolicial').value || 'Não informado';
+      $('printPosto').textContent = $('postoGraduacao').value || '-';
+      $('printUnidade').textContent = $('unidade').value || '-';
+      $('printMes').textContent = $('mesReferencia').value || '-';
+      $('dataGeracao').textContent = new Date().toLocaleString('pt-BR');
+      
+      window.print();
+    }
+
+    init();
   </script>
 </body>
 </html>
