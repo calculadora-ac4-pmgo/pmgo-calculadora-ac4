@@ -14,7 +14,7 @@
   };
 
   /* ------------------------------------------------------------ estado */
-  let escalas = [];          // { id, inicio, fim, descricao, feriado }
+  let escalas = [];          // { id, inicio, fim, descricao }
   let editandoId = null;     // id da escala em edição (null = criando)
   let filtroMes = 'todos';   // 'todos' | 'YYYY-MM'
   let ultimaExcluida = null; // para desfazer
@@ -120,7 +120,7 @@
   /* ------------------------------------------------------------- cálculo
      Regras (Portaria SSP): minuto a minuto.
      - Noturno: 22:00 até 05:00 (inclusive).
-     - Vermelha: sexta, sábado, domingo — ou escala marcada como feriado.  */
+     - Vermelha: sexta, sábado e domingo.  */
   function calcularEscala(e) {
     const ini = new Date(e.inicio);
     const fim = new Date(e.fim);
@@ -132,7 +132,7 @@
       const dia = m.getDay();
       const tempoDia = m.getHours() * 60 + m.getMinutes();
       const noturno = tempoDia >= 22 * 60 || tempoDia <= 5 * 60;
-      const vermelha = e.feriado || dia === 5 || dia === 6 || dia === 0;
+      const vermelha = dia === 5 || dia === 6 || dia === 0;
       cont[vermelha ? (noturno ? 'VN' : 'VD') : (noturno ? 'AN' : 'AD')]++;
     }
 
@@ -179,7 +179,7 @@
         !confirm(`A escala tem ${duracaoHoras.toFixed(1)} horas de duração. Confirma?`)) {
       ok = false;
     }
-    return ok ? { inicio, fim, descricao, feriado: $('escalaFeriado').checked } : null;
+    return ok ? { inicio, fim, descricao } : null;
   }
 
   function submeterFormulario() {
@@ -194,7 +194,6 @@
     } else {
       escalas.push({ id: Date.now() + Math.random(), ...dados });
       $('escalaDescricao').value = '';
-      $('escalaFeriado').checked = false;
       toast('Escala adicionada.');
     }
     salvar();
@@ -208,7 +207,6 @@
     $('escalaInicio').value = e.inicio;
     $('escalaFim').value = e.fim;
     $('escalaDescricao').value = e.descricao;
-    $('escalaFeriado').checked = !!e.feriado;
     $('btnSubmit').textContent = 'Salvar alterações';
     $('btnCancelEdit').classList.remove('hidden');
     $('formTitle').textContent = 'Editar escala';
@@ -222,7 +220,6 @@
     $('btnCancelEdit').classList.add('hidden');
     $('formTitle').textContent = 'Lançar escala';
     $('escalaDescricao').value = '';
-    $('escalaFeriado').checked = false;
     ['fieldInicio', 'fieldFim', 'fieldDescricao'].forEach((f) => $(f).classList.remove('invalid'));
   }
 
@@ -332,7 +329,6 @@
       if (r.minVermelha > 0) chips.push('<span class="chip chip-red">Vermelha</span>');
       if (r.minVermelha < r.mins) chips.push('<span class="chip chip-green">Azul</span>');
       if (r.minNoturno > 0) chips.push(`<span class="chip chip-night">${fmtHoras(r.minNoturno)} noturno</span>`);
-      if (e.feriado) chips.push('<span class="chip chip-neutral">Feriado</span>');
       chips.push(`<span class="chip chip-neutral">${fmtHoras(r.mins)}</span>`);
 
       html += `
@@ -481,7 +477,6 @@
         inicio: ev.inicio,
         fim: ev.fim,
         descricao: ev.descricao,
-        feriado: false,
       });
     });
     $('modalImport').close();
@@ -521,7 +516,7 @@
     const sep = ';';
     const num = (cent) => (cent / 100).toFixed(2).replace('.', ',');
     const linhas = [
-      ['Descrição', 'Início', 'Término', 'Horas', 'Horas diurnas', 'Horas noturnas', 'Feriado', 'Valor (R$)'].join(sep),
+      ['Descrição', 'Início', 'Término', 'Horas', 'Horas diurnas', 'Horas noturnas', 'Valor (R$)'].join(sep),
     ];
     let total = 0;
     lista.forEach((e) => {
@@ -533,11 +528,10 @@
         (r.mins / 60).toFixed(2).replace('.', ','),
         (r.minDiurno / 60).toFixed(2).replace('.', ','),
         (r.minNoturno / 60).toFixed(2).replace('.', ','),
-        e.feriado ? 'Sim' : 'Não',
         num(r.valorCentavos),
       ].join(sep));
     });
-    linhas.push(['TOTAL', '', '', '', '', '', '', num(total)].join(sep));
+    linhas.push(['TOTAL', '', '', '', '', '', num(total)].join(sep));
     baixar('﻿' + linhas.join('\r\n'), 'escalas-ac4.csv', 'text/csv;charset=utf-8');
     toast('Planilha CSV gerada.');
   }

@@ -15,11 +15,10 @@ No celular, use a opção **"Adicionar à tela inicial"** do navegador para inst
 
 ## Funcionalidades
 
-- **Lançamento de escalas** com início, término, descrição e marcação de feriado
-  (feriado aplica tarifa vermelha o dia inteiro).
+- **Lançamento de escalas** com início, término e descrição.
 - **Cálculo minuto a minuto** de horas diurnas e noturnas:
   - noturno: 22h às 5h;
-  - tarifa vermelha: sexta, sábado, domingo e feriados;
+  - tarifa vermelha: sexta, sábado e domingo;
   - tarifa azul: demais dias.
 - **Dashboard reativo** com total de horas, quantidade de escalas e valor estimado.
 - **Filtro por mês** quando há escalas em meses diferentes.
