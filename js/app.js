@@ -181,10 +181,12 @@
   }
 
   /* ------------------------------------------------------------- cálculo
-     Regras (Portaria SSP): minuto a minuto.
-     - Noturno: [22:00, 05:00) — o minuto das 05:00 já é diurno,
-       sem lacuna nem sobreposição na fronteira.
-     - Vermelha: sexta, sábado e domingo.  */
+     Regras (Portaria SSP / matriz de conferência):
+     - Azul × Vermelha: definida pelo DIA DE INÍCIO da escala e mantida
+       no período inteiro (sexta a domingo = vermelha; seg a qui = azul).
+       Uma escala que começa na sexta e termina no sábado é toda vermelha.
+     - Noturno: [22:00, 05:00) minuto a minuto — o minuto das 05:00 já é
+       diurno, sem lacuna nem sobreposição na fronteira.  */
   function calcularEscala(e) {
     const ini = new Date(e.inicio);
     const fim = new Date(e.fim);
@@ -192,12 +194,13 @@
     const cont = { AD: 0, AN: 0, VD: 0, VN: 0 };
     const tabela = tabelaParaCalculo(e);
 
+    const diaInicio = ini.getDay();
+    const vermelha = diaInicio === 5 || diaInicio === 6 || diaInicio === 0;
+
     for (let i = 0; i < mins; i++) {
       const m = new Date(ini.getTime() + i * 60000);
-      const dia = m.getDay();
       const tempoDia = m.getHours() * 60 + m.getMinutes();
       const noturno = tempoDia >= 22 * 60 || tempoDia < 5 * 60;
-      const vermelha = dia === 5 || dia === 6 || dia === 0;
       cont[vermelha ? (noturno ? 'VN' : 'VD') : (noturno ? 'AN' : 'AD')]++;
     }
 
@@ -209,6 +212,7 @@
     const valorCentavos = Math.round(centavosMinuto / 60);
     return {
       mins,
+      cont,
       minDiurno: cont.AD + cont.VD,
       minNoturno: cont.AN + cont.VN,
       minVermelha: cont.VD + cont.VN,
@@ -222,28 +226,41 @@
 
   /* -------------------------------------------- testes de regressão
      Execute no console do navegador: __ac4Testes()
-     Valida o cálculo contra os valores oficiais da Portaria 621/2026. */
+     Matriz real de conferência (Portaria SSP nº 621/2026).
+     Valida minutos por categoria (AD/AN/VD/VN) e o total em centavos. */
   window.__ac4Testes = function () {
+    const h = (n) => n * 60; // horas -> minutos
     const casos = [
-      { caso: 'A sex 18h→sáb 8h (14h)', inicio: '2026-07-03T18:00', fim: '2026-07-04T08:00',
-        mins: 840, diurno: 420, noturno: 420, centavos: 59500 },
-      { caso: 'B sáb 8h→dom 8h (24h)', inicio: '2026-07-04T08:00', fim: '2026-07-05T08:00',
-        mins: 1440, diurno: 1020, noturno: 420, centavos: 99500 },
-      { caso: 'C seg 8h→18h (10h azul dia)', inicio: '2026-07-06T08:00', fim: '2026-07-06T18:00',
-        mins: 600, diurno: 600, noturno: 0, centavos: 30000 },
-      { caso: 'D seg 22h→ter 5h (7h azul noite)', inicio: '2026-07-06T22:00', fim: '2026-07-07T05:00',
-        mins: 420, diurno: 0, noturno: 420, centavos: 23100 },
-      { caso: 'E sáb 22h→dom 5h (7h verm. noite)', inicio: '2026-07-11T22:00', fim: '2026-07-12T05:00',
-        mins: 420, diurno: 0, noturno: 420, centavos: 31500 },
+      { caso: '1 sex 03/07 18h→sáb 8h (14h)', inicio: '2026-07-03T18:00', fim: '2026-07-04T08:00',
+        AD: 0, AN: 0, VD: h(7), VN: h(7), centavos: 59500 },
+      { caso: '2 sáb 04/07 8h→dom 8h (24h)', inicio: '2026-07-04T08:00', fim: '2026-07-05T08:00',
+        AD: 0, AN: 0, VD: h(17), VN: h(7), centavos: 99500 },
+      { caso: '3 sex 10/07 18h→sáb 8h (14h)', inicio: '2026-07-10T18:00', fim: '2026-07-11T08:00',
+        AD: 0, AN: 0, VD: h(7), VN: h(7), centavos: 59500 },
+      { caso: '4 sáb 11/07 8h→dom 8h (24h)', inicio: '2026-07-11T08:00', fim: '2026-07-12T08:00',
+        AD: 0, AN: 0, VD: h(17), VN: h(7), centavos: 99500 },
+      { caso: '5 sex 17/07 18h→sáb 8h (14h)', inicio: '2026-07-17T18:00', fim: '2026-07-18T08:00',
+        AD: 0, AN: 0, VD: h(7), VN: h(7), centavos: 59500 },
+      { caso: '6 sáb 18/07 8h→dom 8h (24h)', inicio: '2026-07-18T08:00', fim: '2026-07-19T08:00',
+        AD: 0, AN: 0, VD: h(17), VN: h(7), centavos: 99500 },
+      { caso: '7 sex 24/07 18h→sáb 8h (14h)', inicio: '2026-07-24T18:00', fim: '2026-07-25T08:00',
+        AD: 0, AN: 0, VD: h(7), VN: h(7), centavos: 59500 },
+      { caso: 'Azul dia: seg 06/07 8h→18h (10h)', inicio: '2026-07-06T08:00', fim: '2026-07-06T18:00',
+        AD: h(10), AN: 0, VD: 0, VN: 0, centavos: 30000 },
+      { caso: 'Azul noite: seg 06/07 22h→ter 5h (7h)', inicio: '2026-07-06T22:00', fim: '2026-07-07T05:00',
+        AD: 0, AN: h(7), VD: 0, VN: 0, centavos: 23100 },
+      { caso: 'Início qui, vira sex: qui 02/07 20h→sex 6h (toda azul)', inicio: '2026-07-02T20:00', fim: '2026-07-03T06:00',
+        AD: h(2) + h(1), AN: h(7), VD: 0, VN: 0, centavos: 32100 },
     ];
     const resultados = casos.map((c) => {
       const r = calcularEscala({ inicio: c.inicio, fim: c.fim });
-      const ok = r.mins === c.mins && r.minDiurno === c.diurno &&
-        r.minNoturno === c.noturno && r.valorCentavos === c.centavos;
+      const ok = ['AD', 'AN', 'VD', 'VN'].every((k) => r.cont[k] === c[k]) &&
+        r.valorCentavos === c.centavos;
       return {
         caso: c.caso, ok,
         esperado: fmtMoeda(c.centavos), obtido: fmtMoeda(r.valorCentavos),
-        diurno: `${r.minDiurno / 60}h`, noturno: `${r.minNoturno / 60}h`,
+        'azul dia': `${r.cont.AD / 60}h`, 'azul noite': `${r.cont.AN / 60}h`,
+        'verm. dia': `${r.cont.VD / 60}h`, 'verm. noite': `${r.cont.VN / 60}h`,
       };
     });
     if (console.table) console.table(resultados);
