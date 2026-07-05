@@ -860,7 +860,8 @@ textarea.control { min-height: 74px; resize: vertical; }
 .share-icon-ics    { background: #e8f0ff; color: var(--blue-600); }
 .share-icon-csv    { background: #dcfce7; color: var(--green-700); }
 .share-icon-pdf    { background: var(--danger-soft); color: var(--danger); }
-.share-icon-gcal   { background: #e8f0fe; color: #1a73e8; }
+.share-icon-gcal    { background: #e8f0fe; color: #1a73e8; }
+.share-icon-install { background: var(--primary-soft); color: var(--primary-text); }
 
 /* ===== PRINT ===== */
 .print-only { display: none; }
