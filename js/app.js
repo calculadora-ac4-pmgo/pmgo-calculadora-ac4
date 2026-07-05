@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Calculadora AC4 — v20
+   Calculadora AC4 — v21
    ========================================================================== */
 (() => {
   'use strict';
@@ -767,20 +767,57 @@
 
   /* -------------------------------------------- PWA install prompt */
   function initPWA() {
+    const jaInstalado = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    if (jaInstalado) return;
+
     const dismissed = localStorage.getItem(STORAGE.pwaBanner);
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+
+    const mostrarBotaoInstalar = () => $('shareInstallOpt')?.classList.remove('hidden');
+    const ocultarBotaoInstalar = () => $('shareInstallOpt')?.classList.add('hidden');
+
+    if (isIOS) mostrarBotaoInstalar();
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredInstallPrompt = e;
       if (!dismissed) $('pwaBanner')?.classList.remove('hidden');
+      mostrarBotaoInstalar();
     });
+
+    on('shareInstallOpt', 'click', async () => {
+      $('dialogShare')?.close();
+      haptic(10);
+      if (isIOS) {
+        await dialogConfirmar(
+          'No Safari: toque em ↑ Compartilhar → "Adicionar à Tela de Início" para instalar o app.',
+          { textoOk: 'Entendi', perigoso: false }
+        );
+        return;
+      }
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      if (outcome === 'accepted') {
+        ocultarBotaoInstalar();
+        $('pwaBanner')?.classList.add('hidden');
+        toast('App instalado! Acesse pela tela inicial.');
+      }
+    });
+
     on('pwaBannerInstall', 'click', async () => {
       if (!deferredInstallPrompt) return;
       deferredInstallPrompt.prompt();
       const { outcome } = await deferredInstallPrompt.userChoice;
       deferredInstallPrompt = null;
       $('pwaBanner')?.classList.add('hidden');
-      if (outcome === 'accepted') toast('App instalado com sucesso!');
+      if (outcome === 'accepted') {
+        ocultarBotaoInstalar();
+        toast('App instalado! Acesse pela tela inicial.');
+      }
     });
+
     on('pwaBannerClose', 'click', () => {
       $('pwaBanner')?.classList.add('hidden');
       localStorage.setItem(STORAGE.pwaBanner, '1');
