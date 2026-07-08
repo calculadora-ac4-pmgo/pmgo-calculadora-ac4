@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Calculadora AC4 — v43
+   Calculadora AC4 — v44
    Módulo principal: estado, UI, persistência e exportações.
    Regras de negócio, formatação e agenda vivem em js/modules/.
    ========================================================================== */
@@ -786,31 +786,52 @@ import {
       .join('-');
   const fmtMoedaLinha = (centavos) => fmtMoeda(centavos).replace(/\u00a0/g, ' ');
 
-  const botoesLinhaMobileHTML = (id) => `
-    <div class="ec-line-actions" aria-label="Ações da escala">
-      <button class="ec-line-action" data-acao="editar" data-id="${id}" title="Editar" aria-label="Editar">
-        <span aria-hidden="true">✎</span>
+  const botoesCardMobileHTML = (id) => `
+    <div class="ec-card-actions" aria-label="Ações da escala">
+      <button class="ec-action-btn" data-acao="editar" data-id="${id}" type="button">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        <span>Editar</span>
       </button>
-      <button class="ec-line-action" data-acao="duplicar" data-id="${id}" title="Duplicar para o dia seguinte" aria-label="Duplicar">
-        <span aria-hidden="true">⧉</span>
+      <button class="ec-action-btn" data-acao="duplicar" data-id="${id}" type="button">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        <span>Duplicar</span>
       </button>
-      <button class="ec-line-action delete" data-acao="remover" data-id="${id}" title="Excluir" aria-label="Excluir">
-        <span aria-hidden="true">🗑</span>
+      <button class="ec-action-btn delete" data-acao="remover" data-id="${id}" type="button">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+        <span>Excluir</span>
       </button>
     </div>`;
 
-  /* Linha enxuta de uma escala (mobile): data - dia - horas - valor + ações.
+  /* Card de escala (mobile): leitura confortável + ações grandes.
      Estrutura própria — o desktop segue usando a tabela, sem alteração. */
   const cardEscalaHTML = (e, r) => {
     const qtd = e.qtdPm || 1;
     const valorTotal = r.valorCentavos * qtd;
-    const resumoLinha = `${fmtData(e.inicio)} - ${fmtDiaSemanaLinha(e.inicio)} - ${fmtHoras(r.mins)} - ${fmtMoedaLinha(valorTotal)}`;
+    const inicio = parseDateTimeLocal(e.inicio) || new Date(e.inicio);
+    const dia = String(inicio.getDate()).padStart(2, '0');
+    const mes = inicio.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').toUpperCase();
+    const fimStr = fmtData(e.inicio) === fmtData(e.fim) ? fmtHora(e.fim) : `${fmtData(e.fim)} ${fmtHora(e.fim)}`;
+    const resumo = `${fmtData(e.inicio)} - ${fmtDiaSemanaLinha(e.inicio)} - ${fmtHoras(r.mins)} - ${fmtMoedaLinha(valorTotal)}`;
     return `
-      <div class="escala-card" role="listitem">
-        <div class="ec-line" aria-label="${escapeHTML(resumoLinha)}">
-          <span class="ec-line-text">${escapeHTML(resumoLinha)}</span>
-          ${botoesLinhaMobileHTML(e.id)}
+      <div class="escala-card" role="listitem" aria-label="${escapeHTML(resumo)}">
+        <div class="ec-card-main">
+          <div class="ec-date-badge" aria-hidden="true">
+            <strong>${dia}</strong>
+            <span>${escapeHTML(mes)}</span>
+          </div>
+          <div class="ec-card-info">
+            <div class="ec-weekday">${fmtDiaSemanaLinha(e.inicio)}</div>
+            <div class="ec-detail-row">
+              <span>${fmtData(e.inicio)}</span>
+              <span>${fmtHora(e.inicio)} → ${fimStr}</span>
+            </div>
+            <div class="ec-duration">${fmtHoras(r.mins)}${qtd > 1 ? ` · ${qtd} PMs` : ''}</div>
+          </div>
+          <div class="ec-money">
+            <span>${fmtMoedaLinha(valorTotal)}</span>
+          </div>
         </div>
+        ${botoesCardMobileHTML(e.id)}
       </div>`;
   };
 
