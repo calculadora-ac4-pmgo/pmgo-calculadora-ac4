@@ -4,6 +4,15 @@
 
 ---
 
+## Sessão de 08/07/2026 — reauditoria de produção (v53): nota 9,2/10
+
+- Reauditoria completa executada sobre a v53, com evidência re-coletada (testes locais, inspeção dos 8 `innerHTML`, verificação HTTP da produção ao vivo, workflow, SW). Relatório: [`relatorio_auditoria_producao_v53.md`](relatorio_auditoria_producao_v53.md).
+- **Resultado: 9,2/10 (era 8,0)** — sem P0/P1/P2 abertos; backlog da v46 concluído 10/10; produção confirmada com `docs/`/`tests/` em 404 e HSTS.
+- Backlog residual (P3/P4): 3 testes da matriz v46 (`csvTextoSeguro` unitário, propriedade do total, smoke de storage corrompido, ~1h); ESLint no CI; modularização futura de `app.js`; métrica anônima de versão.
+- Risco nº 1 registrado: **bus factor = 1** — compensado por diário, testes como portão de deploy e regras documentadas.
+
+---
+
 ## Sessão de 08/07/2026 — P2 concluída: monitor de uptime criado
 
 - O gestor **criou o monitor no UptimeRobot** (conta gratuita): monitor **HTTP** para `https://calculadora-ac4-pmgo.github.io/`, intervalo de **5 minutos**. Última pendência do backlog encerrada.
