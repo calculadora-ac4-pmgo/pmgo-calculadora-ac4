@@ -1,10 +1,10 @@
 /* ==========================================================================
-   Calculadora AC4 — v48
+   Calculadora AC4 — v49
    Módulo principal: estado, UI, persistência e exportações.
    Regras de negócio, formatação e agenda vivem em js/modules/.
    ========================================================================== */
 import {
-  fmtMoeda, fmtHoras, fmtHorasCheias, fmtDataHora, fmtData, fmtDiaSemana, fmtHora,
+  fmtMoeda, fmtHoras, fmtDataHora, fmtData, fmtDiaSemana, fmtHora,
   combinarDataHoraLocal, parseDateTimeLocal, formatarDataHoraInput, toInputLocal,
   calcularTerminoPorDuracao, validarIntervaloEscala, toInputMonth, fmtMesRef, escapeHTML,
 } from './modules/formato.mjs';
@@ -311,7 +311,8 @@ import {
   /* --------------------------------------------------------------- ações */
   function lerQtdPm() {
     const val = parseInt($('escalaQtdPm')?.value || '1', 10);
-    return Number.isFinite(val) && val >= 1 ? val : 1;
+    /* Mesmo teto do stepper (999) também para valor digitado à mão. */
+    return Number.isFinite(val) && val >= 1 ? Math.min(999, val) : 1;
   }
 
   function validarFormulario() {
@@ -585,7 +586,7 @@ import {
       texto += `🕐 ${fmtHora(e.inicio)} → ${fimStr}\n`;
 
       if (r.minNoturno > 0 && r.minDiurno > 0) {
-        texto += `⏱ ${fmtHoras(r.mins)}  |  Diurno: ${fmtHorasCheias(r.minDiurno)}  /  Noturno: ${fmtHorasCheias(r.minNoturno)}\n`;
+        texto += `⏱ ${fmtHoras(r.mins)}  |  Diurno: ${fmtHoras(r.minDiurno)}  /  Noturno: ${fmtHoras(r.minNoturno)}\n`;
       } else {
         texto += `⏱ ${fmtHoras(r.mins)} (${r.minNoturno > 0 ? 'Noturno' : 'Diurno'})\n`;
       }
@@ -735,8 +736,8 @@ import {
     const totValor   = resultados.reduce((s, x) => s + x.r.valorCentavos * (x.e.qtdPm || 1), 0);
 
     $('totHoras').textContent    = fmtHoras(totMins);
-    $('totDiurnas').textContent  = fmtHorasCheias(totDiurno);
-    $('totNoturnas').textContent = fmtHorasCheias(totNoturno);
+    $('totDiurnas').textContent  = fmtHoras(totDiurno);
+    $('totNoturnas').textContent = fmtHoras(totNoturno);
     $('totValor').textContent    = fmtMoeda(totValor);
     $('mobileTotal').textContent = fmtMoeda(totValor);
     $('pctDiurnas').textContent  = totMins ? `${((totDiurno  / totMins) * 100).toFixed(1).replace('.', ',')}% do total` : '0% do total';
@@ -780,7 +781,7 @@ import {
       if (r.minVermelha > 0) tipoChips.push('<span class="chip chip-red">Vermelha</span>');
       if (r.minVermelha < r.mins) tipoChips.push('<span class="chip chip-blue">Azul</span>');
       tipoChips.push(r.minNoturno > 0
-        ? `<span class="chip chip-night">${fmtHorasCheias(r.minNoturno)} noturno</span>`
+        ? `<span class="chip chip-night">${fmtHoras(r.minNoturno)} noturno</span>`
         : '<span class="chip chip-day">Diurno</span>');
       if (qtd > 1) tipoChips.push(`<span class="chip chip-neutral">${qtd} PMs</span>`);
       const origemLabel = (e.origem || 'AC4').replace('CONVENIO_', 'Conv. ').replace('FAZENDARIO_SEC_ECON', 'Fazendário');
@@ -844,8 +845,8 @@ import {
     $('prSummary').innerHTML = [
       `<div><span class="pr-label">Escalas:</span> <strong>${lista.length}</strong></div>`,
       `<div><span class="pr-label">Horas totais:</span> <strong>${fmtHoras(totMins)}</strong></div>`,
-      `<div><span class="pr-label">H. diurnas:</span> <strong>${fmtHorasCheias(totDiurno)}</strong></div>`,
-      `<div><span class="pr-label">H. noturnas:</span> <strong>${fmtHorasCheias(totNoturno)}</strong></div>`,
+      `<div><span class="pr-label">H. diurnas:</span> <strong>${fmtHoras(totDiurno)}</strong></div>`,
+      `<div><span class="pr-label">H. noturnas:</span> <strong>${fmtHoras(totNoturno)}</strong></div>`,
       `<div><span class="pr-label">Valor estimado:</span> <strong>${fmtMoeda(totValor)}</strong></div>`,
     ].join('');
 
@@ -870,8 +871,8 @@ import {
           <td class="pr-center">${fmtHoras(r.mins)}</td>
           <td>${unidade}</td>
           <td>${origem}</td>
-          <td class="pr-center">${fmtHorasCheias(r.minDiurno)}</td>
-          <td class="pr-center">${fmtHorasCheias(r.minNoturno)}</td>
+          <td class="pr-center">${fmtHoras(r.minDiurno)}</td>
+          <td class="pr-center">${fmtHoras(r.minNoturno)}</td>
           <td class="pr-valor">${valorCell}</td>
         </tr>`;
     });
@@ -880,8 +881,8 @@ import {
       <tfoot>
         <tr class="pr-total-row">
           <td colspan="8">TOTAL GERAL</td>
-          <td class="pr-center">${fmtHorasCheias(totDiurno)}</td>
-          <td class="pr-center">${fmtHorasCheias(totNoturno)}</td>
+          <td class="pr-center">${fmtHoras(totDiurno)}</td>
+          <td class="pr-center">${fmtHoras(totNoturno)}</td>
           <td class="pr-valor">${fmtMoeda(totValor)}</td>
         </tr>
       </tfoot>` : '';
@@ -1202,6 +1203,8 @@ import {
     on('shareCopy',   'click', () => { $('dialogShare')?.close(); copiarResumo(); });
     on('shareIcsOpt', 'click', () => { $('dialogShare')?.close(); agendarEscalas(escalasOrdenadas()); });
     on('agendaCancelar', 'click', () => $('dialogAgenda')?.close());
+    on('footerPrivacidade', 'click', (ev) => { ev.preventDefault(); $('dialogPrivacidade')?.showModal(); });
+    on('privacidadeFechar', 'click', () => $('dialogPrivacidade')?.close());
     on('shareCsvOpt', 'click', () => { $('dialogShare')?.close(); exportarCSV(); });
     on('sharePdfOpt', 'click', () => { $('dialogShare')?.close(); imprimirRelatorio(); });
     on('shareClose',  'click', () => $('dialogShare')?.close());
