@@ -4,7 +4,7 @@
    Google Calendar. Funções puras, sem acesso ao DOM.
    ========================================================================== */
 import {
-  fmtDataHora, fmtMoeda, fmtHoras, fmtHorasCheias,
+  fmtDataHora, fmtMoeda, fmtHoras,
   parseDateTimeLocal, dataLocalValida,
 } from './formato.mjs';
 import { calcularEscala, TABELA_OFICIAL } from './calculo.mjs';
@@ -139,8 +139,8 @@ function detalhesEventoAgenda(e, tabelaVigente) {
     `Origem: ${e.origem || 'AC4'}`,
     '',
     `Duracao: ${fmtHoras(r.mins)}`,
-    `Horas diurnas: ${fmtHorasCheias(r.minDiurno)}`,
-    `Horas noturnas: ${fmtHorasCheias(r.minNoturno)}`,
+    `Horas diurnas: ${fmtHoras(r.minDiurno)}`,
+    `Horas noturnas: ${fmtHoras(r.minNoturno)}`,
   ].filter((l) => l !== null);
   if (qtd > 1) linhas.push(`Qtd. PM: ${qtd}`);
   linhas.push('', `Valor estimado: ${fmtMoeda(r.valorCentavos * qtd)}`);

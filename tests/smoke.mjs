@@ -164,10 +164,18 @@ const ROTEIRO = `(async () => {
   const ics = window.__ac4ValidarICS();
   ok('Arquivo .ics gerado é válido', ics.ok && ics.eventos === 1, JSON.stringify(ics.falhas || []));
 
-  // 4b. suíte de lançamento no navegador (validações + teto de duração de 7 dias)
+  // 4b. suíte de lançamento no navegador (validações + teto de duração de 192h)
   const lanc = window.__ac4TestesLancamento();
   ok('Suíte de lançamento (inclui teto de duração)', lanc === 'TODOS OS TESTES DE LANCAMENTO OK',
      typeof lanc === 'string' ? lanc : JSON.stringify(lanc).slice(0, 200));
+
+  // 4c. relatório de impressão: popula o #printReport sem abrir o diálogo de print
+  window.print = () => {};
+  document.getElementById('btnPrint').click();
+  await espera(200);
+  ok('Relatório de impressão populado com a escala e o total',
+     document.querySelectorAll('#printReport .pr-table tbody tr').length === 1
+       && document.getElementById('prTableWrap').innerHTML.includes('420,00'));
 
   // 5. remoção limpa o estado
   document.querySelector('#listaEscalas [data-acao="remover"]').click();
@@ -207,6 +215,12 @@ try {
   }
 
   const passos = JSON.parse(avaliacao.result.value);
+
+  // PDF real via CSS de impressão (@media print) — o #printReport foi populado no passo 4c.
+  const pdf = await cdp.enviar('Page.printToPDF', { printBackground: false }, sessionId);
+  const kb = Math.round(((pdf.data || '').length * 3 / 4) / 1024);
+  passos.push({ nome: 'PDF gerado pelo CSS de impressão (≥10KB)', ok: kb >= 10, detalhe: `${kb}KB` });
+
   console.table(passos.map(({ nome, ok, detalhe }) => ({ passo: nome, ok, detalhe })));
 
   const falhas = passos.filter((p) => !p.ok);

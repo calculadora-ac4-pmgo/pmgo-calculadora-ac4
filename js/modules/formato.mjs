@@ -12,7 +12,6 @@ export const fmtHoras = (mins) => {
   const m = mins % 60;
   return m === 0 ? `${h}h` : `${h}h${String(m).padStart(2, '0')}`;
 };
-export const fmtHorasCheias = (mins) => `${Math.round(mins / 60)}h`;
 
 export const fmtDataHora = (iso) =>
   new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
