@@ -4,6 +4,14 @@
 
 ---
 
+## Sessão de 08/07/2026 — P2 concluída: monitor de uptime criado
+
+- O gestor **criou o monitor no UptimeRobot** (conta gratuita): monitor **HTTP** para `https://calculadora-ac4-pmgo.github.io/`, intervalo de **5 minutos**. Última pendência do backlog encerrada.
+- **A confirmar pelo gestor:** que o **contato de alerta por e-mail** (welitonsp@gmail.com) esteja ativo e vinculado ao monitor — sem isso o UptimeRobot detecta a queda mas não notifica. As demais etapas do onboarding (SMS, push, selo público, MCP/API) são opcionais.
+- **Não há mais pendências abertas no diário.** Backlog da auditoria de produção 100% tratado (P1–P4 resolvidos ou fora de escopo por decisão do gestor).
+
+---
+
 ## Sessão de 08/07/2026 — residuais de a11y aprovados pelo gestor (v53)
 
 Os dois residuais menores de acessibilidade documentados na v52 foram **aprovados e aplicados**:
