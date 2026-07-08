@@ -132,14 +132,12 @@ const ROTEIRO_MOBILE = `(async () => {
   const tema = rect('#btnTheme');
   ok('Botão de tema ≥ 44px', tema && tema.width >= 44 && tema.height >= 44, tema && Math.round(tema.width) + '×' + Math.round(tema.height));
 
-  // 4. linha da escala: altura tocável e ações compactas na ordem pedida
-  const linhaEl = document.querySelector('#listaEscalas .escala-card .ec-line');
-  const linhaEscala = linhaEl?.getBoundingClientRect();
-  ok('Linha da escala ≥ 44px de altura', linhaEscala && linhaEscala.height >= 44, linhaEscala && Math.round(linhaEscala.height) + 'px');
+  // 4. card da escala: leitura confortável e ações tocáveis
+  const cardEscala = rect('#listaEscalas .escala-card');
+  ok('Card da escala visível e confortável', cardEscala && cardEscala.height >= 124, cardEscala && Math.round(cardEscala.height) + 'px');
 
-  // 5. filtro de mês e importação ≥ 44px
-  const filtro = rect('#filtroMes');
-  ok('Filtro de mês ≥ 44px', filtro && filtro.height >= 44, filtro && Math.round(filtro.height) + 'px');
+  // 5. filtro de mês removido da interface
+  ok('Filtro "Todos os meses" removido', !document.getElementById('filtroMes'));
 
   // 6. tabela em modo cartão (thead oculto)
   const thead = document.querySelector('.escala-table thead');
@@ -160,18 +158,29 @@ const ROTEIRO_MOBILE = `(async () => {
   const mResumo = document.getElementById('metricResumoMobile');
   ok('Resumo das métricas visível (Xh · N escalas)', !!mResumo && getComputedStyle(mResumo).display !== 'none' && /escala/.test(mResumo.textContent), mResumo && mResumo.textContent);
 
-  // 8c. lista premium: linha única no lugar da tabela
+  // 8c. lista premium: card legível no lugar da tabela
   ok('Tabela oculta no mobile', getComputedStyle(document.querySelector('.table-wrap')).display === 'none');
   ok('Cards de escala visíveis no mobile', getComputedStyle(document.querySelector('.escala-cards')).display !== 'none');
-  const linhaTexto = document.querySelector('.escala-card .ec-line-text');
-  ok('Linha mostra data - dia - horas - valor',
-     !!linhaTexto && linhaTexto.textContent.includes('06/07/2026 - Segunda-Feira - 14h - R$'),
-     linhaTexto && linhaTexto.textContent);
-  ok('Linha completa cabe sem truncar em 393px',
-     !!linhaEl && linhaEl.scrollWidth <= linhaEl.clientWidth + 1,
-     linhaEl && (Math.round(linhaEl.scrollWidth) + ' vs ' + Math.round(linhaEl.clientWidth)));
-  const acoesLinha = [...document.querySelectorAll('.escala-card .ec-line-action')].map((b) => b.textContent.trim()).join(' ');
-  ok('Ações do card na ordem ✎ ⧉ 🗑', acoesLinha === '✎ ⧉ 🗑', acoesLinha);
+  const weekday = document.querySelector('.escala-card .ec-weekday');
+  const money = document.querySelector('.escala-card .ec-money');
+  ok('Card mostra dia, horário, duração e valor em texto grande',
+     !!weekday && /Segunda-Feira/.test(weekday.textContent) &&
+     !!money && money.textContent.includes('R$ 420,00') &&
+     parseFloat(getComputedStyle(weekday).fontSize) >= 14,
+     (weekday && weekday.textContent) + ' / ' + (money && money.textContent));
+  const acoesCard = [...document.querySelectorAll('.escala-card .ec-action-btn')];
+  ok('Ações do card têm rótulo Editar, Duplicar, Excluir',
+     acoesCard.map((b) => b.textContent.trim()).join(' | ') === 'Editar | Duplicar | Excluir',
+     acoesCard.map((b) => b.textContent.trim()).join(' | '));
+  const acoesGrandes = acoesCard.every((b) => {
+    const r = b.getBoundingClientRect();
+    return r.height >= 44 && r.width >= 80;
+  });
+  ok('Ações do card têm alvo de toque grande', acoesGrandes,
+     acoesCard.map((b) => {
+       const r = b.getBoundingClientRect();
+       return Math.round(r.width) + '×' + Math.round(r.height);
+     }).join(' | '));
 
   // 9. bottom sheet de lançamento: abre por "Nova escala", fecha pelo X
   const painel = document.querySelector('.launch-panel');
@@ -308,10 +317,10 @@ const ROTEIRO_320 = `(async () => {
   const barra = document.querySelector('.mobile-bar')?.getBoundingClientRect();
   ok('320px: barra fixa cabe na tela', barra && barra.width <= window.innerWidth + 1,
      barra && Math.round(barra.width) + 'px');
-  const linha = document.querySelector('.escala-card .ec-line');
-  ok('320px: escala permanece em linha única',
-     !!linha && getComputedStyle(linha).whiteSpace === 'nowrap' && linha.getBoundingClientRect().height <= 52,
-     linha && Math.round(linha.getBoundingClientRect().height) + 'px');
+  const acoes = [...document.querySelectorAll('.escala-card .ec-action-btn')];
+  ok('320px: ações continuam tocáveis',
+     acoes.length === 3 && acoes.every((b) => b.getBoundingClientRect().height >= 44),
+     acoes.map((b) => Math.round(b.getBoundingClientRect().width) + '×' + Math.round(b.getBoundingClientRect().height)).join(' | '));
   localStorage.removeItem('pmgoEscalas');
   return JSON.stringify(passos);
 })()`;
