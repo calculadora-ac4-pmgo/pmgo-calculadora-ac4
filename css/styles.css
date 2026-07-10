@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Calculadora AC4 — v54
+   Calculadora AC4 — v55
    ========================================================================== */
 
 /* Inter (variable, 100–900) self-hosted — sem dependência do Google Fonts,
@@ -486,7 +486,7 @@ textarea.control { min-height: 74px; resize: vertical; }
 .qtd-btn,
 .escala-cards,
 .metric-resumo-mobile,
-.launch-resumo { display: none; }
+.launch-result { display: none; }
 
 /* ===== TARIFF STRIP — referência discreta de valores ===== */
 .tariff-strip {
@@ -1095,6 +1095,7 @@ textarea.control { min-height: 74px; resize: vertical; }
     visibility: hidden;
     transition: transform 0.24s cubic-bezier(0.34, 1.2, 0.64, 1), visibility 0s linear 0.24s;
     padding-bottom: env(safe-area-inset-bottom);
+    scroll-padding-bottom: calc(84px + env(safe-area-inset-bottom));
   }
   .launch-panel.is-open {
     transform: translateY(0);
@@ -1239,7 +1240,8 @@ textarea.control { min-height: 74px; resize: vertical; }
   .dur-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .dur-rapida-tag { display: inline; }
   .dur-chip {
-    min-height: 50px;
+    position: relative;
+    min-height: 54px;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-md);
     background: var(--surface-2);
@@ -1256,6 +1258,14 @@ textarea.control { min-height: 74px; resize: vertical; }
     border-color: var(--navy-900);
     color: #fff;
     box-shadow: 0 8px 18px -12px var(--navy-900);
+  }
+  .dur-chip.is-active::after {
+    content: '✓';
+    position: absolute;
+    top: 4px;
+    right: 7px;
+    font-size: 0.68rem;
+    font-weight: 900;
   }
 
   /* Término automático — tag no rótulo + dica curta */
@@ -1291,21 +1301,100 @@ textarea.control { min-height: 74px; resize: vertical; }
   }
   .qtd-btn:active { background: var(--surface-3); }
 
-  /* ===== Resumo do lançamento no sheet ===== */
-  .launch-resumo {
+  /* ===== Resultado premium do lançamento no sheet ===== */
+  .launch-result {
     display: block;
-    margin-bottom: 12px;
-    padding: 10px 14px;
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--green-600) 12%, var(--surface-2));
-    border: 1px solid color-mix(in srgb, var(--green-600) 24%, transparent);
+    min-width: 0;
+    padding: 18px;
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(145deg, color-mix(in srgb, var(--green-600) 13%, var(--surface)), var(--surface));
+    border: 1px solid color-mix(in srgb, var(--green-600) 34%, var(--border));
     color: var(--text);
-    font-size: 0.86rem;
-    font-weight: 800;
-    text-align: center;
+    box-shadow: 0 18px 36px -30px color-mix(in srgb, var(--green-600) 62%, transparent);
     font-variant-numeric: tabular-nums;
   }
-  .launch-resumo.vazio { display: none; }
+  .launch-result-title {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+  }
+  .launch-result-empty {
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 650;
+  }
+  .launch-result-content { margin-top: 7px; }
+  .launch-result.is-empty .launch-result-content { display: none; }
+  .launch-result:not(.is-empty) .launch-result-empty { display: none; }
+  .launch-result-value {
+    max-width: 100%;
+    color: var(--green-700);
+    font-size: clamp(2.15rem, 11vw, 3.15rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+  }
+  [data-theme="dark"] .launch-result-value { color: #6ee7b7; }
+  .launch-result-helper {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 750;
+  }
+  .launch-result-duration {
+    margin-top: 16px;
+    color: var(--text);
+    font-size: 1.05rem;
+    font-weight: 900;
+  }
+  .launch-result-hours {
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .launch-result-end {
+    margin-top: 14px;
+    padding-top: 13px;
+    border-top: 1px solid color-mix(in srgb, var(--green-600) 25%, var(--border));
+  }
+  .launch-result-end-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green-700);
+    font-size: 0.72rem;
+    font-weight: 850;
+  }
+  [data-theme="dark"] .launch-result-end-label { color: #6ee7b7; }
+  .launch-result-end-label::before { content: '✓'; font-weight: 900; }
+  .launch-result-end-value {
+    margin-top: 4px;
+    color: var(--text);
+    font-size: 0.98rem;
+    font-weight: 900;
+  }
+
+  #btnSubmit {
+    min-height: 56px;
+    padding-inline: 14px;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.015em;
+  }
+  #btnSubmit .submit-result:not(.hidden)::before { content: '·'; margin-right: 7px; }
+  #formEscala .launch-grid > .launch-full:last-child {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 0 -4px -4px;
+    padding: 8px 4px 4px;
+    background: linear-gradient(180deg, transparent, var(--surface) 24%);
+  }
 
   /* ===== Métricas premium: só o card de Valor + resumo em texto ===== */
   .metrics { display: block; }
@@ -1339,77 +1428,42 @@ textarea.control { min-height: 74px; resize: vertical; }
     background: var(--surface);
     box-shadow: var(--shadow-sm);
   }
-  .ec-card-main {
-    min-width: 0;
-    display: flex;
-    align-items: stretch;
-    gap: 12px;
-  }
-  .ec-date-badge {
-    flex: 0 0 54px;
-    min-height: 62px;
-    display: grid;
-    place-items: center;
-    align-content: center;
-    border-radius: var(--radius-sm);
-    background: color-mix(in srgb, var(--gold-500) 14%, var(--surface-2));
-    border: 1px solid color-mix(in srgb, var(--gold-500) 32%, var(--border));
+  .ec-card-main { min-width: 0; }
+  .ec-date-line {
     color: var(--warn-text);
-    font-variant-numeric: tabular-nums;
-  }
-  .ec-date-badge strong {
-    font-size: 1.42rem;
+    font-size: 0.72rem;
     font-weight: 900;
-    line-height: 1;
-  }
-  .ec-date-badge span {
-    margin-top: 3px;
-    font-size: 0.68rem;
-    font-weight: 900;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.075em;
   }
   .ec-card-info {
-    flex: 1 1 auto;
     min-width: 0;
-    display: grid;
-    align-content: center;
-    gap: 4px;
+    margin-top: 5px;
   }
-  .ec-weekday {
+  .ec-time {
     color: var(--text);
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 900;
-    line-height: 1.18;
-  }
-  .ec-detail-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 10px;
-    color: var(--text-muted);
-    font-size: 0.82rem;
-    font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.25;
     font-variant-numeric: tabular-nums;
   }
   .ec-duration {
-    color: var(--primary-text);
+    margin-top: 5px;
+    color: var(--text-muted);
     font-size: 0.82rem;
     font-weight: 900;
     font-variant-numeric: tabular-nums;
   }
   .ec-money {
-    flex: 0 0 auto;
-    display: grid;
-    align-content: center;
-    justify-items: end;
-    min-width: 92px;
+    margin-top: 12px;
     color: var(--green-600);
-    font-size: 1rem;
+    font-size: 1.28rem;
     font-weight: 900;
     line-height: 1.1;
-    white-space: nowrap;
     font-variant-numeric: tabular-nums;
   }
+  .ec-qtd { margin-top: 11px; color: var(--text); font-size: 0.86rem; font-weight: 900; }
+  .ec-per-pm { margin-top: 3px; color: var(--text-muted); font-size: 0.78rem; font-weight: 750; }
+  .ec-total { margin-top: 7px; color: var(--green-600); font-size: 1.2rem; font-weight: 950; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   .ec-card-actions {
     margin-top: 12px;
     padding-top: 10px;
@@ -1482,6 +1536,14 @@ textarea.control { min-height: 74px; resize: vertical; }
 @media (max-width: 400px) {
   #mobileAdd { font-size: 0.8rem; padding: 0 10px; }
   .mobile-bar-total .value { font-size: 1rem; }
+}
+
+@media (max-width: 360px) {
+  .mobile-add-label { font-size: 0; }
+  .mobile-add-label::after { content: 'Nova'; font-size: 0.8rem; }
+  .mobile-bar { gap: 8px; padding-inline: 10px; }
+  .mobile-bar-actions { gap: 6px; }
+  .mobile-bar-total .value { font-size: 0.92rem; letter-spacing: -0.02em; }
 }
 
 /* ===== SITE FOOTER ===== */

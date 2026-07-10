@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Calculadora AC4 — v54
+   Calculadora AC4 — v55
    Módulo principal: estado, UI, persistência e exportações.
    Regras de negócio, formatação e agenda vivem em js/modules/.
    ========================================================================== */
@@ -30,7 +30,7 @@ import {
   /* Versão da aplicação (sincronizada pelo tools/bump-version.mjs). Serve para
      carimbar o log de erros e detectar clientes presos em cache antigo:
      se __ac4Version no console divergir do rodapé/CHANGELOG, o SW não atualizou. */
-  const APP_VERSION = '54';
+  const APP_VERSION = '55';
 
   const STORAGE = {
     escalas:   'pmgoEscalas',
@@ -519,7 +519,6 @@ import {
     if ($('escalaDescricao')) $('escalaDescricao').value = e.descricao === 'Escala AC4' ? '' : (e.descricao || '');
     if ($('escalaOrigem'))   $('escalaOrigem').value = e.origem || 'AC4';
     sincronizarTodosControlesDataHora();
-    $('btnSubmit').textContent = 'Salvar alterações';
     $('btnCancelEdit').classList.remove('hidden');
     $('formTitle').lastChild.textContent = ' Editar escala';
     setTituloSheet('Editar escala');
@@ -545,20 +544,65 @@ import {
     el.textContent = parseDateTimeLocal(v) ? `${fmtDiaSemana(v)}, ${fmtDataHora(v)}` : '';
   }
 
-  /* Resumo compacto do lançamento (mobile): "14h · 1 PM · AC4 · R$ 595,00".
-     Usa o calcularEscala existente sobre os valores atuais do formulário. */
+  const rotuloQuantidadePm = (qtd) => `${qtd} ${qtd === 1 ? 'PM' : 'PMs'}`;
+
+  function formatarTerminoMobile(valor) {
+    const data = parseDateTimeLocal(valor);
+    if (!data) return '';
+    const diaSemana = data.toLocaleDateString('pt-BR', { weekday: 'short' })
+      .replace('.', '')
+      .replace(/^./, (letra) => letra.toLocaleUpperCase('pt-BR'));
+    const diaMes = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    return `${diaSemana}, ${diaMes} · ${fmtHora(valor)}`;
+  }
+
+  function atualizarBotaoSubmitMobile(resultado = null, qtd = 1) {
+    const label = $('btnSubmitLabel');
+    const valor = $('btnSubmitResult');
+    if (!label || !valor) return;
+    if (!resultado) {
+      label.textContent = editandoId === null ? 'Adicionar escala' : 'Salvar alterações';
+      valor.textContent = '';
+      valor.classList.add('hidden');
+      return;
+    }
+    label.textContent = editandoId === null ? 'Adicionar' : 'Salvar';
+    valor.textContent = qtd > 1
+      ? `TOTAL ${fmtMoeda(resultado.valorCentavos * qtd)}`
+      : fmtMoeda(resultado.valorCentavos);
+    valor.classList.remove('hidden');
+  }
+
+  /* Apresentação mobile do resultado. Toda a inteligência financeira continua
+     centralizada em calcularEscala(); esta função só formata seu retorno. */
   function atualizarResumoLancamento() {
     const el = $('launchResumo');
     if (!el) return;
     const inicio = $('escalaInicio')?.value || '';
     const fim = $('escalaFim')?.value || '';
     const intervalo = validarIntervaloEscala(inicio, fim);
-    if (!intervalo.ok) { el.textContent = ''; el.classList.add('vazio'); return; }
+    if (!intervalo.ok) {
+      el.classList.add('is-empty');
+      atualizarBotaoSubmitMobile();
+      return;
+    }
     const r = calcularEscala({ inicio, fim });
     const qtd = lerQtdPm();
-    const origem = labelOrigem($('escalaOrigem')?.value || 'AC4');
-    el.textContent = `${fmtHoras(r.mins)} · ${qtd} PM · ${origem} · ${fmtMoeda(r.valorCentavos * qtd)}`;
-    el.classList.remove('vazio');
+    $('qtdMinus')?.toggleAttribute('disabled', qtd <= 1);
+    $('qtdPlus')?.toggleAttribute('disabled', qtd >= 999);
+    const total = r.valorCentavos * qtd;
+    $('launchResultTitle').textContent = qtd === 1 ? 'VALOR ESTIMADO' : 'CUSTO TOTAL ESTIMADO';
+    $('launchResultValue').textContent = fmtMoeda(total);
+    $('launchResultHelper').textContent = qtd === 1
+      ? 'Valor individual'
+      : `${rotuloQuantidadePm(qtd)} · ${fmtMoeda(r.valorCentavos)} por PM`;
+    $('launchResultDuration').textContent = r.mins % 60 === 0
+      ? `${r.mins / 60} ${r.mins === 60 ? 'hora' : 'horas'}`
+      : fmtHoras(r.mins);
+    $('launchResultHours').textContent = `${fmtHoras(r.minDiurno)} diurnas · ${fmtHoras(r.minNoturno)} noturnas`;
+    $('launchResultEnd').textContent = formatarTerminoMobile(fim);
+    el.classList.remove('is-empty');
+    atualizarBotaoSubmitMobile(r, qtd);
   }
 
   function sincronizarControlesDataHora(id) {
@@ -605,13 +649,13 @@ import {
     if ($('escalaDescricao')) $('escalaDescricao').value = '';
     if ($('escalaQtdPm'))    $('escalaQtdPm').value = '1';
     if ($('escalaOrigem'))   $('escalaOrigem').value = 'AC4';
-    $('btnSubmit').textContent = 'Adicionar escala';
     $('btnCancelEdit').classList.add('hidden');
     $('formTitle').lastChild.textContent = ' Lançar escala';
     ['fieldInicio', 'fieldFim'].forEach((f) => {
       $(f).classList.remove('invalid');
       $(f).querySelector('.control')?.removeAttribute('aria-invalid');
     });
+    atualizarResumoLancamento();
   }
 
   function duplicarEscala(id) {
@@ -816,28 +860,26 @@ import {
     const qtd = e.qtdPm || 1;
     const valorTotal = r.valorCentavos * qtd;
     const inicio = parseDateTimeLocal(e.inicio) || new Date(e.inicio);
-    const dia = String(inicio.getDate()).padStart(2, '0');
-    const mes = inicio.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').toUpperCase();
-    const fimStr = fmtData(e.inicio) === fmtData(e.fim) ? fmtHora(e.fim) : `${fmtData(e.fim)} ${fmtHora(e.fim)}`;
+    const dataLinha = `${inicio.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase()} · ${String(inicio.getDate()).padStart(2, '0')} ${inicio.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').toUpperCase()}`;
+    const mudouDia = fmtData(e.inicio) !== fmtData(e.fim);
+    const fimDia = mudouDia
+      ? `${(parseDateTimeLocal(e.fim) || new Date(e.fim)).toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase()} `
+      : '';
+    const horarioLinha = `${fmtHora(e.inicio)} → ${fimDia}${fmtHora(e.fim)}`;
     const resumo = `${fmtData(e.inicio)} - ${fmtDiaSemanaLinha(e.inicio)} - ${fmtHoras(r.mins)} - ${fmtMoedaLinha(valorTotal)}`;
     return `
       <div class="escala-card" role="listitem" aria-label="${escapeHTML(resumo)}">
         <div class="ec-card-main">
-          <div class="ec-date-badge" aria-hidden="true">
-            <strong>${dia}</strong>
-            <span>${escapeHTML(mes)}</span>
-          </div>
+          <div class="ec-date-line">${escapeHTML(dataLinha)}</div>
           <div class="ec-card-info">
-            <div class="ec-weekday">${fmtDiaSemanaLinha(e.inicio)}</div>
-            <div class="ec-detail-row">
-              <span>${fmtData(e.inicio)}</span>
-              <span>${fmtHora(e.inicio)} → ${fimStr}</span>
-            </div>
-            <div class="ec-duration">${fmtHoras(r.mins)}${qtd > 1 ? ` · ${qtd} PMs` : ''}</div>
+            <div class="ec-time">${escapeHTML(horarioLinha)}</div>
+            <div class="ec-duration">${r.mins % 60 === 0 ? `${r.mins / 60} ${r.mins === 60 ? 'hora' : 'horas'}` : fmtHoras(r.mins)}</div>
           </div>
-          <div class="ec-money">
-            <span>${fmtMoedaLinha(valorTotal)}</span>
-          </div>
+          ${qtd === 1
+            ? `<div class="ec-money">${fmtMoedaLinha(r.valorCentavos)}</div>`
+            : `<div class="ec-qtd">${rotuloQuantidadePm(qtd)}</div>
+               <div class="ec-per-pm">${fmtMoedaLinha(r.valorCentavos)} por PM</div>
+               <div class="ec-total">TOTAL ${fmtMoedaLinha(valorTotal)}</div>`}
         </div>
         ${botoesCardMobileHTML(e.id)}
       </div>`;
@@ -1385,15 +1427,28 @@ import {
     });
 
     /* Stepper de Qtd. PM (mobile) — ajusta o mesmo #escalaQtdPm, faixa 1–999. */
+    const atualizarEstadoStepper = () => {
+      const qtd = lerQtdPm();
+      $('qtdMinus')?.toggleAttribute('disabled', qtd <= 1);
+      $('qtdPlus')?.toggleAttribute('disabled', qtd >= 999);
+    };
     const ajustarQtd = (delta) => {
       const inp = $('escalaQtdPm');
       if (!inp) return;
       const atual = parseInt(inp.value || '1', 10);
       inp.value = Math.min(999, Math.max(1, (Number.isFinite(atual) ? atual : 1) + delta));
       atualizarResumoLancamento();
+      atualizarEstadoStepper();
     };
     on('qtdMinus', 'click', () => ajustarQtd(-1));
     on('qtdPlus', 'click', () => ajustarQtd(1));
+    on('escalaQtdPm', 'change', () => {
+      const inp = $('escalaQtdPm');
+      if (inp) inp.value = String(lerQtdPm());
+      atualizarResumoLancamento();
+      atualizarEstadoStepper();
+    });
+    atualizarEstadoStepper();
 
     on('listaEscalas', 'click', (ev) => {
       const btn = ev.target.closest('[data-acao]');
