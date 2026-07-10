@@ -14,8 +14,8 @@
   <!-- Preload da fonte principal — reduz reflow/CLS do font-swap da Inter -->
   <link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 
-  <link rel="stylesheet" href="css/styles.css?v=54">
-  <script src="js/theme.js?v=54"></script>
+  <link rel="stylesheet" href="css/styles.css?v=55">
+  <script src="js/theme.js?v=55"></script>
 </head>
 <body>
 
@@ -28,7 +28,7 @@
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <!-- Banner PWA -->
-  <div class="pwa-banner hidden" id="pwaBanner" role="banner" aria-label="Instalar aplicativo">
+  <div class="pwa-banner hidden" id="pwaBanner" role="region" aria-label="Instalar aplicativo">
     <div class="pwa-banner-content">
       <img src="assets/icon.svg" alt="" width="32" height="32" class="pwa-banner-icon">
       <div>
@@ -203,9 +203,9 @@
                   <option value="24">24 horas</option>
                 </select>
                 <div class="dur-chips" id="durChips" role="group" aria-label="Duração rápida">
-                  <button type="button" class="dur-chip" data-horas="12">12h</button>
-                  <button type="button" class="dur-chip" data-horas="14">14h</button>
-                  <button type="button" class="dur-chip" data-horas="24">24h</button>
+                  <button type="button" class="dur-chip" data-horas="12" aria-pressed="false"><span>12h</span></button>
+                  <button type="button" class="dur-chip" data-horas="14" aria-pressed="false"><span>14h</span></button>
+                  <button type="button" class="dur-chip" data-horas="24" aria-pressed="false"><span>24h</span></button>
                 </div>
               </div>
 
@@ -225,19 +225,34 @@
                 <p class="field-error" role="alert">O término deve ser depois do início.</p>
                 <!-- Espelho legível do término: alguns navegadores mobile não
                      repintam o datetime-local quando o valor é definido por JS -->
-                <p class="fim-auto" id="fimResumo" role="status" aria-live="polite"></p>
+                <p class="fim-auto" id="fimResumo"></p>
                 <p class="field-hint fim-hint">Calculado automaticamente.</p>
+              </div>
+
+              <div class="launch-result launch-full is-empty" id="launchResumo" aria-live="polite" aria-atomic="true">
+                <p class="launch-result-title" id="launchResultTitle">VALOR ESTIMADO</p>
+                <p class="launch-result-empty" id="launchResultEmpty">Informe o início e escolha a duração.</p>
+                <div class="launch-result-content" id="launchResultContent">
+                  <p class="launch-result-value" id="launchResultValue"></p>
+                  <p class="launch-result-helper" id="launchResultHelper"></p>
+                  <p class="launch-result-duration" id="launchResultDuration"></p>
+                  <p class="launch-result-hours" id="launchResultHours"></p>
+                  <div class="launch-result-end">
+                    <p class="launch-result-end-label">Término calculado automaticamente</p>
+                    <p class="launch-result-end-value" id="launchResultEnd"></p>
+                  </div>
+                </div>
               </div>
 
               <div class="field" id="fieldQtdPm">
                 <label for="escalaQtdPm"><span class="field-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Qtd. PM</label>
                 <div class="qtd-control">
-                  <button type="button" class="qtd-btn" id="qtdMinus" aria-label="Diminuir quantidade de PM" tabindex="-1">&minus;</button>
+                  <button type="button" class="qtd-btn" id="qtdMinus" aria-label="Diminuir quantidade de PM" aria-controls="escalaQtdPm">&minus;</button>
                   <input type="number" class="control" id="escalaQtdPm"
                          min="1" max="999" value="1"
                          placeholder="1"
                          aria-describedby="hintQtdPm">
-                  <button type="button" class="qtd-btn" id="qtdPlus" aria-label="Aumentar quantidade de PM" tabindex="-1">+</button>
+                  <button type="button" class="qtd-btn" id="qtdPlus" aria-label="Aumentar quantidade de PM" aria-controls="escalaQtdPm">+</button>
                 </div>
                 <p class="field-hint" id="hintQtdPm">Valor multiplicado pelo nº de PMs</p>
               </div>
@@ -271,12 +286,12 @@
               </div>
 
               <div class="launch-full">
-                <div class="launch-resumo vazio" id="launchResumo" aria-live="polite"></div>
                 <button type="submit" class="btn btn-primary btn-block" id="btnSubmit">
                   <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M12 5v14M5 12h14"/>
                   </svg>
-                  Adicionar escala
+                  <span id="btnSubmitLabel">Adicionar escala</span>
+                  <span class="submit-result hidden" id="btnSubmitResult"></span>
                 </button>
                 <button type="button" class="btn btn-ghost btn-block hidden" id="btnCancelEdit" style="margin-top:8px">Cancelar edição</button>
               </div>
@@ -325,7 +340,7 @@
         &copy; <span class="footer-year"></span> Weliton Pinheiro &mdash; Todos os direitos reservados.
       </p>
       <p class="site-footer-meta">
-        Calculadora AC4 &middot; PMGO &middot; v54 &middot;
+        Calculadora AC4 &middot; PMGO &middot; v55 &middot;
         <a href="#" id="footerPrivacidade" class="footer-link">Privacidade</a> &middot;
         <a href="https://github.com/calculadora-ac4-pmgo" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
       </p>
@@ -345,11 +360,11 @@
           <path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98"/>
         </svg>
       </button>
-      <button class="btn btn-primary" id="mobileAdd" aria-controls="launchPanel" aria-expanded="false">
+      <button class="btn btn-primary" id="mobileAdd" aria-label="Nova escala" aria-controls="launchPanel" aria-expanded="false">
         <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M12 5v14M5 12h14"/>
         </svg>
-        Nova escala
+        <span class="mobile-add-label">Nova escala</span>
       </button>
     </div>
   </div>
@@ -472,7 +487,7 @@
     </div>
   </dialog>
 
-  <script type="module" src="js/app.js?v=54"></script>
+  <script type="module" src="js/app.js?v=55"></script>
 
   <!-- Relatório profissional de impressão — populado pelo JS antes de window.print() -->
   <section id="printReport">

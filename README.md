@@ -28,6 +28,7 @@ Em dispositivos móveis, é possível usar a opção do navegador para adicionar
 - Geração de relatório em PDF pela função de impressão do navegador.
 - Tema claro/escuro com persistência da preferência do usuário.
 - Funcionamento como PWA, com suporte offline após o primeiro carregamento em navegadores compatíveis.
+- Refinamento Premium Mobile-First: destaque do resultado automático, melhor visualização para uso individual e administrativo, botão contextual, cards refinados, acessibilidade e melhorias para uso com uma mão.
 
 ## Regras de cálculo
 
@@ -113,6 +114,7 @@ npx --yes eslint@9 .      # lint (no-undef e afins; sem dependências no repo)
 node tests/run-tests.mjs  # regras de cálculo + CSV/invariantes + geração .ics
 node tests/smoke.mjs      # fluxo E2E em Chrome headless (18 passos, inclui PDF real)
 node tests/mobile-check.mjs
+node tests/mobile-v55-check.mjs
 ```
 
 As suítes puras também estão disponíveis no console do navegador:

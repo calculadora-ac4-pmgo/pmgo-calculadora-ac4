@@ -162,10 +162,10 @@ const ROTEIRO_MOBILE = `(async () => {
   // 8c. lista premium: card legível no lugar da tabela
   ok('Tabela oculta no mobile', getComputedStyle(document.querySelector('.table-wrap')).display === 'none');
   ok('Cards de escala visíveis no mobile', getComputedStyle(document.querySelector('.escala-cards')).display !== 'none');
-  const weekday = document.querySelector('.escala-card .ec-weekday');
+  const weekday = document.querySelector('.escala-card .ec-time');
   const money = document.querySelector('.escala-card .ec-money');
   ok('Card mostra dia, horário, duração e valor em texto grande',
-     !!weekday && /Segunda-Feira/.test(weekday.textContent) &&
+     !!weekday && /07:00/.test(weekday.textContent) &&
      !!money && money.textContent.includes('R$ 420,00') &&
      parseFloat(getComputedStyle(weekday).fontSize) >= 14,
      (weekday && weekday.textContent) + ' / ' + (money && money.textContent));
@@ -229,7 +229,12 @@ const ROTEIRO_MOBILE = `(async () => {
   const resumo = document.getElementById('fimResumo');
   ok('Espelho legível do término visível', !!resumo && resumo.textContent.includes('11/07') && getComputedStyle(resumo).display !== 'none', resumo && resumo.textContent);
   const lResumo = document.getElementById('launchResumo');
-  ok('Resumo do lançamento no sheet (14h · 1 PM · AC4 · R$)', !!lResumo && getComputedStyle(lResumo).display !== 'none' && /14h/.test(lResumo.textContent) && /R\\$/.test(lResumo.textContent), lResumo && lResumo.textContent);
+  ok('Resultado premium do lançamento mostra valor, duração e horas',
+     !!lResumo && !lResumo.classList.contains('is-empty') &&
+     document.getElementById('launchResultValue').textContent.includes('595,00') &&
+     document.getElementById('launchResultDuration').textContent === '14 horas' &&
+     document.getElementById('launchResultHours').textContent === '7h diurnas · 7h noturnas',
+     lResumo && lResumo.textContent);
   ok('Campos separados refletem início e término calculado',
      dtInicio.value === '2026-07-10' && hrInicio.value === '18:00' && dtFim.value === '2026-07-11' && hrFim.value === '08:00',
      [dtInicio.value, hrInicio.value, dtFim.value, hrFim.value].join(' / '));
