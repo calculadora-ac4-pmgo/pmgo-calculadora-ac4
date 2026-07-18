@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Calculadora AC4 — v55
+   Calculadora AC4 — v56
    ========================================================================== */
 
 /* Inter (variable, 100–900) self-hosted — sem dependência do Google Fonts,
@@ -678,6 +678,20 @@ textarea.control { min-height: 74px; resize: vertical; }
    reservada, o footer e o alerta legal "pulam" quando o empty-state/tabela
    entra. Reservar a altura do empty-state estabiliza o primeiro paint. */
 #listaEscalas { min-height: 220px; }
+
+/* CWV F-02 — barreira de primeiro paint: enquanto o <html> tem .app-pending
+   (removida pelo app.js após o init), o conteúdo dinâmico fica invisível mas
+   segue ocupando espaço (visibility, nunca display:none — sem layout shift).
+   Failsafe só-CSS: se o JS nunca rodar, a animação revela o conteúdo aos 5s. */
+.app-pending .layout,
+.app-pending .site-footer,
+.app-pending .mobile-bar {
+  visibility: hidden;
+  animation: ac4-revelar-failsafe 0s 5s forwards;
+}
+@keyframes ac4-revelar-failsafe {
+  to { visibility: visible; }
+}
 .feed-header {
   min-height: 60px;
   padding: 16px 20px;
