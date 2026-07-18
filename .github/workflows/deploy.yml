@@ -43,6 +43,9 @@ jobs:
       - name: Validação mobile premium v55
         run: node tests/mobile-v55-check.mjs
 
+      - name: Core Web Vitals — CLS e interações críticas
+        run: node tests/web-vitals-check.mjs
+
   deploy:
     needs: test
     # PRs só testam — deploy acontece apenas em push na main / dispatch manual.

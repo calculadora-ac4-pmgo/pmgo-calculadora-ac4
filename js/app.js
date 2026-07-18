@@ -135,10 +135,11 @@ import {
     sessionStorage.removeItem(STORAGE.escalas);
   }
 
+  /* Só grava a configuração — quem precisar refletir a mudança na tela chama
+     render() no ponto de uso. Evita a renderização dupla no init() (CWV F-01). */
   function salvarConfig() {
     const val = (id) => ($(id) ? $(id).value : VALORES_OFICIAIS[id]);
     localStorage.setItem(STORAGE.config, JSON.stringify({ ad: val('valAD'), an: val('valAN'), vd: val('valVD'), vn: val('valVN') }));
-    render();
   }
 
   function carregar() {
@@ -1475,8 +1476,21 @@ import {
     }
   }
 
+  /* Derruba a barreira de primeiro paint (CWV F-02): o <html> nasce com
+     .app-pending (conteúdo em visibility:hidden, mas ocupando espaço) e só
+     revela após o init() montar o estado real — sem repaint intermediário. */
+  function revelarAplicacao() {
+    document.documentElement.classList.remove('app-pending');
+    document.documentElement.classList.add('app-ready');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
-    init();
+    try {
+      init();
+    } finally {
+      /* Mesmo se init() falhar, a tela nunca fica permanentemente invisível. */
+      revelarAplicacao();
+    }
     const ano = new Date().getFullYear();
     document.querySelectorAll('.footer-year').forEach((el) => { el.textContent = ano; });
     const printYear = $('printYear');
